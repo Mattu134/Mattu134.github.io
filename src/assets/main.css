@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --verde: rgb(25, 206, 77);
+  --fondo: #f7f7f7;
+  --texto: #000000;
+  --blanco: #fff;
+  --gris-claro: rgb(255, 253, 253);
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: var(--fondo);
+  color: var(--texto);
+  line-height: 1.5;
+}
+
+.logo-eco { 
+    width: 200px;
+    height: auto;
+}
+
+.product-grid .card-img-top {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  border-bottom: 1px solid var(--gris-claro);
+}
+
+/* Estilo para los headers de las páginas de categorías */
+.categoria-header {
+  background: var(--verde);
+  color: var(--blanco);
+  text-align: center;
+  padding: 2rem 1rem;
+  margin: 2rem auto;
+  border-radius: 10px;
+  width: 75%;
+  max-width: 900px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.categoria-header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+
+.glass-caption {
+  background: rgba(25, 206, 77, 0.45) !important; /* var(--verde) en rgba con 45% de opacidad */
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
