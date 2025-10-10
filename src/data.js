@@ -1,12 +1,10 @@
-// src/data.js
 
-// Lista completa de productos (extraída de index.html, dulces.html, Frutas.html)
 export const initialProducts = [
   // Home (Ofertas)
   { id: 'h1', name: 'Manzanas rojas', price: 2520, originalPrice: 2800, category: 'Frutas', image: 'manzanaRoja.png' },
   { id: 'h2', name: 'Pan integral', price: 2700, originalPrice: 3000, category: 'Otros', image: 'PanIntegral.png' },
   { id: 'h3', name: 'Ketchup Heinz', price: 3800, originalPrice: 4200, category: 'Otros', image: 'thumb-tomatoketchup.png' },
-  { id: 'h4', name: 'Coca Cola 1,5L', price: 2250, originalPrice: 2500, category: 'Bebidas', image: 'cocacola.png' },
+  { id: 'h4', name: 'Fanta 1,5L', price: 2250, originalPrice: 2500, category: 'Bebidas', image: 'fanta.jpg' },
   { id: 'h5', name: 'Jugo de naranja', price: 1620, originalPrice: 1800, category: 'Bebidas', image: 'JuegoNaranja.jpg' },
 
   // Frutas

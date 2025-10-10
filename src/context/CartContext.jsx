@@ -1,13 +1,11 @@
-// src/context/CartContext.jsx
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
-// Función para simular el modal de alerta (usada en script.js)
+// Función para mostrar un modal personalizado
 const showCustomModal = (message) => {
-    // Requiere que el modal esté en el DOM (en el CartProvider)
     const modalElement = document.getElementById('customAlertModal');
     if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
@@ -23,14 +21,14 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Calcula el total de ítems y el monto total
+    // Calcula el total y el monto actual del carrito
     const { totalItems, totalAmount } = useMemo(() => {
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         return { totalItems, totalAmount };
     }, [cart]);
 
-    // Lógica para añadir un producto (reemplaza bindAddButtons)
+    // Logica para agregar un producto al carrito
     const addToCart = useCallback((productName, productPrice, productId) => {
         setCart(currentCart => {
             const existing = currentCart.find(item => item.id === productId);
@@ -45,12 +43,12 @@ export const CartProvider = ({ children }) => {
         showCustomModal(`"${productName}" añadido al carrito.`);
     }, []);
 
-    // Lógica para eliminar un producto del modal del carrito
+    // Logica para eliminar un producto del carrito
     const removeFromCart = useCallback((productId) => {
         setCart(currentCart => currentCart.filter(i => i.id !== productId));
     }, []);
 
-    // Lógica del botón pagar (replica btnPagar)
+    // Logica para procesar el pago
     const processPayment = useCallback(() => {
         if (cart.length === 0) {
             showCustomModal('Tu carrito está vacío.');
@@ -60,7 +58,7 @@ export const CartProvider = ({ children }) => {
         }
     }, [cart, totalAmount]);
 
-    // Lógica de búsqueda
+    // logica para manejar la búsqueda
     const handleSearch = useCallback((term) => {
         setSearchTerm(term.toLowerCase().trim());
     }, []);

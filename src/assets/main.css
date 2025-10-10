@@ -19,7 +19,7 @@ body {
   line-height: 1.5;
 }
 
-.logo-eco { 
+.logo-eco {
     width: 200px;
     height: auto;
 }
@@ -31,7 +31,7 @@ body {
   border-bottom: 1px solid var(--gris-claro);
 }
 
-/* Estilo para los headers de las páginas de categorías */
+/* Estilo para los headers*/
 .categoria-header {
   background: var(--verde);
   color: var(--blanco);
@@ -53,7 +53,7 @@ body {
 
 
 .glass-caption {
-  background: rgba(25, 206, 77, 0.45) !important; /* var(--verde) en rgba con 45% de opacidad */
+  background: rgba(25, 206, 77, 0.45) !important; 
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
   border: 1px solid rgba(255, 255, 255, 0.3);

@@ -1,4 +1,3 @@
-// src/components/SearchBar.jsx
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 
@@ -8,7 +7,7 @@ const SearchBar = () => {
 
   const filterProducts = (e) => {
     e.preventDefault();
-    handleSearch(input); // Actualiza el término de búsqueda global
+    handleSearch(input); // Actualiza el término de búsqueda en el contexto
   };
 
   return (

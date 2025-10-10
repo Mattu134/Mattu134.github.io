@@ -20,7 +20,7 @@ const SobreNosotros = () => {
                 </p>
               </div>
               <div className="col-md-6 text-center">
-                {/* Asegúrate de tener 'fruta.jpg' en public/images/ */}
+                {}
                 <img src="/images/fruta.jpg" alt="Frutas frescas" className="img-fluid rounded shadow-sm" />
               </div>
             </div>
