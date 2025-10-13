@@ -1,32 +1,70 @@
-import { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import Contact from '../components/Contact';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
-import { getInitialOfferProducts } from '../data';
 
 const Home = () => {
+  //  Estado para almacenar los productos y manejar la carga
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { searchTerm } = useCart();
-  const initialProducts = useMemo(() => getInitialOfferProducts(), []);
+  
+  //  useEffect para simular el fetch de datos desde una API
+  useEffect(() => {
+    const fetchOffers = async () => {
+      setLoading(true);
+      try {
+        // Reemplaza 'URL_DE_TU_API' por la URL real de tu backend
+        const response = await fetch('URL_DE_TU_API/productos?offer=true'); 
+        
+        let data;
+        if (response.ok) {
+            data = await response.json();
+        } else {
+             // Si no tienes API, puedes descomentar la importación de datos locales aquí
+             // const { getInitialOfferProducts } = await import('../data');
+             // data = getInitialOfferProducts(); 
+             data = [];
+        }
 
-  const filteredProducts = initialProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm)
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener ofertas:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
+
+  // Filtrado de productos
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <>
       <Hero />
+      
       <section id="ofertas" className="container my-5">
         <h2 className="text-center fw-bold text-success mb-4">Ofertas destacadas</h2>
-        <div id="product-list" className="row g-4 justify-content-center product-grid">
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-          {filteredProducts.length === 0 && (
-            <p className="text-center text-muted col-12">No se encontraron productos en ofertas con el término "{searchTerm}".</p>
-          )}
-        </div>
+        
+        {loading && <p className="text-center">Cargando ofertas...</p>}
+
+        {!loading && (
+            <div id="product-list" className="row g-4 justify-content-center product-grid">
+            {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+            ))}
+            {filteredProducts.length === 0 && (
+                <p className="text-center text-muted col-12">No se encontraron productos en ofertas con el término "{searchTerm}".</p>
+            )}
+            </div>
+        )}
       </section>
+      
       <Contact />
     </>
   );

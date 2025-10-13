@@ -4,11 +4,10 @@ const Hero = () => {
     <section id="hero" className="carousel slide carousel-fade position-relative" data-bs-ride="carousel" data-bs-interval="5000">
       <div className="carousel-inner">
         
-        {}
+        {/* Item 1 */}
         <div className="carousel-item active">
           <img src="/images/VerdurasYfrutas.jpg" className="d-block w-100" style={{ height: '70vh', objectFit: 'cover' }} alt="Alimentos frescos" />
           
-          {}
           <div className="carousel-caption h-100 d-flex flex-column justify-content-center align-items-center">
             <div className="glass-caption rounded p-4 text-center text-white">
               <h1 className="fw-bold display-5">Alimentos frescos y naturales</h1>
@@ -18,11 +17,10 @@ const Hero = () => {
           
         </div>
 
-        {}
+        {/* Item 2 */}
         <div className="carousel-item">
           <img src="/images/CARROSUPER.jpg" className="d-block w-100" style={{ height: '70vh', objectFit: 'cover' }} alt="Carro de supermercado" />
           
-          {}
           <div className="carousel-caption h-100 d-flex flex-column justify-content-center align-items-center">
             <div className="glass-caption rounded p-4 text-center text-white">
               <h1 className="fw-bold display-5">Productos de calidad</h1>
@@ -32,11 +30,10 @@ const Hero = () => {
           
         </div>
 
-        {}
+        {/* Item 3 */}
         <div className="carousel-item">
           <img src="/images/Cesta.jpeg" className="d-block w-100" style={{ height: '70vh', objectFit: 'cover' }} alt="Tienda interior" />
           
-          {}
           <div className="carousel-caption h-100 d-flex flex-column justify-content-center align-items-center">
             <div className="glass-caption rounded p-4 text-center text-white">
               <h1 className="fw-bold display-5">Ofertas imperdibles</h1>

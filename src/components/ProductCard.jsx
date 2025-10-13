@@ -5,12 +5,13 @@ const ProductCard = ({ product }) => {
   const { id, name, price, originalPrice, image } = product;
   const isOffer = price < originalPrice;
 
+  // Ruta absoluta para la imagen, asumiendo que el archivo está en /public/images
   const imageUrl = `/images/${image}`; 
 
   return (
     <div className="col-12 col-sm-6 col-md-4 col-lg-3 product-card"> 
       <div className="card h-100 shadow-sm">
-        {}
+        
         <img 
           src={imageUrl} 
           className="card-img-top" 

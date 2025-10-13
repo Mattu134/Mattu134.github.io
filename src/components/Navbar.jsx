@@ -45,11 +45,11 @@ const Navbar = () => {
                   <i className="bi bi-house"></i> Inicio
                 </NavLink>
               </li>
-              {}
+              
               <li className="nav-item">
-                <a className="nav-link fw-semibold text-success" href="/#ofertas">
+                <Link className="nav-link fw-semibold text-success" to="/#ofertas">
                   <i className="bi bi-tags"></i> Ofertas
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link fw-semibold text-success" to="/quienes-somos">
@@ -57,9 +57,9 @@ const Navbar = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link fw-semibold text-success" href="/#contacto">
+                <Link className="nav-link fw-semibold text-success" to="/#contacto">
                   <i className="bi bi-telephone"></i> Contáctanos
-                </a>
+                </Link>
               </li>
 
               <li className="nav-item dropdown">
@@ -78,7 +78,7 @@ const Navbar = () => {
               <Link to="/admin" className="btn btn-outline-success me-4">
                 <i className="bi bi-person-circle"></i>
               </Link>
-              {}
+              
               <button className="btn btn-success position-relative" data-bs-toggle="modal" data-bs-target="#cartModal">
                 <i className="bi bi-cart3"></i>
                 <span id="cart-count" className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -90,7 +90,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {}
       <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
