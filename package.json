@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://Mattu134.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

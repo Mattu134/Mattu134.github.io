@@ -1,5 +1,4 @@
-// src/App.jsx (CORREGIDO)
-// ❌ ELIMINAR la importación de BrowserRouter as Router
+
 import { Routes, Route } from 'react-router-dom'; 
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
@@ -31,9 +30,6 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path='/admin' element={<AdminPanel />} />
             <Route path='/admin/productos' element={<ProductsList />} />
-            <Route path='/admin/usuarios' element={<UsersList />} /> 
-            <Route path='/admin/ventas' element={<SalesPanel />} />     
-            <Route path='/admin/pedidos' element={<OrdersList />} />
           </Route>
           <Route path="*" element={<Home />} />
             
