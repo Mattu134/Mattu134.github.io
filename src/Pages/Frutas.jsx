@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import { fetchProductsByCategory } from '../data';
 
 const Frutas = () => {
   //  Estado para almacenar los productos y manejar la carga
@@ -10,33 +11,22 @@ const Frutas = () => {
 
   // useEffect para simular el fetch de datos desde una API
   useEffect(() => {
-    const fetchFrutas = async () => {
+    // Define la función asíncrona dentro del hook
+    const loadFrutas = async () => {
       setLoading(true);
       try {
-        //Reemplaza 'URL_DE_TU_API' por la URL real de tu backend
-        const response = await fetch('URL_DE_TU_API/productos?category=frutas'); 
-        
-        // Simulación de respuesta de API (usar datos locales si el fetch falla)
-        let data;
-        if (response.ok) {
-            data = await response.json();
-        } else {
-             // 💡 Si no tienes API, puedes descomentar la importación de datos locales aquí
-             // const { getProductsByCategory } = await import('../data');
-             // data = getProductsByCategory('Frutas'); 
-             data = []; // O dejar vacío para que muestre el mensaje de no encontrado
-        }
-
+        // Llama a la función simulada con la categoría 'Frutas'
+        const data = await fetchProductsByCategory('Frutas'); 
         setProducts(data);
       } catch (error) {
-        console.error('Error al obtener frutas:', error);
-        // Si hay un error, puedes establecer un estado de error
+        console.error('Error al obtener frutas (simulado):', error);
+        // Podrías establecer un estado de error aquí
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFrutas();
+    loadFrutas(); // Llama a la función asíncrona
   }, []); // El array vacío asegura que se ejecute una sola vez al montar
 
   // 3. Filtrado de productos (funciona igual, ahora sobre el estado)

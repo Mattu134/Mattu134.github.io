@@ -3,6 +3,7 @@ import Hero from '../components/Hero';
 import Contact from '../components/Contact';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import { fetchOfferProducts } from '../data';
 
 const Home = () => {
   //  Estado para almacenar los productos y manejar la carga
@@ -12,22 +13,10 @@ const Home = () => {
   
   //  useEffect para simular el fetch de datos desde una API
   useEffect(() => {
-    const fetchOffers = async () => {
+    const loadOffers = async () => {
       setLoading(true);
       try {
-        // Reemplaza 'URL_DE_TU_API' por la URL real de tu backend
-        const response = await fetch('URL_DE_TU_API/productos?offer=true'); 
-        
-        let data;
-        if (response.ok) {
-            data = await response.json();
-        } else {
-             // Si no tienes API, puedes descomentar la importación de datos locales aquí
-             // const { getInitialOfferProducts } = await import('../data');
-             // data = getInitialOfferProducts(); 
-             data = [];
-        }
-
+        const data = await fetchOfferProducts(); 
         setProducts(data);
       } catch (error) {
         console.error('Error al obtener ofertas:', error);
@@ -36,7 +25,7 @@ const Home = () => {
       }
     };
 
-    fetchOffers();
+    loadOffers();
   }, []);
 
   // Filtrado de productos

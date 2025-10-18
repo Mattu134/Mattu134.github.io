@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+import { fetchProductsByCategory } from '../data';
 
 const Dulces = () => {
   //  Estado para almacenar los productos de la API
@@ -12,22 +13,22 @@ const Dulces = () => {
 
   //  useEffect para hacer el fetch de datos
   useEffect(() => {
-    // Definimos la función asíncrona dentro del hook
-    const fetchDulces = async () => {
+    // Define la función asíncrona dentro del hook
+    const loadDulces = async () => {
       setLoading(true);
       try {
-        // La URL de tu API real:
-        const response = await fetch('URL_DE_TU_API/productos?category=dulces'); 
-        const data = await response.json();
-        setProducts(data); // Actualiza el estado con los datos de la API
+        // Llama a la función simulada con la categoría 'Dulces'
+        const data = await fetchProductsByCategory('Dulces'); 
+        setProducts(data); // Actualiza el estado con los datos simulados
       } catch (error) {
-        console.error('Error al obtener dulces:', error);
+        console.error('Error al obtener dulces (simulado):', error);
+         // Podrías establecer un estado de error aquí
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDulces();
+    loadDulces(); // Llama a la función asíncrona
   }, []); // Se ejecuta una sola vez al montar el componente
 
   //  Usar los productos del estado para el filtrado
