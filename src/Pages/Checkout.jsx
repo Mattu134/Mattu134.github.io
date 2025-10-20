@@ -1,39 +1,52 @@
+import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import CheckoutForm from "../components/CheckoutForm";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-  const { cart = [], totalAmount = 0 } = useCart(); 
+  const { cart = [], totalAmount = 0 } = useCart();
+  const navigate = useNavigate();
+  const [showNotification, setShowNotification] = useState(false);
 
   const handleSubmit = (formData) => {
     console.log("Datos del pedido:", formData);
-    console.log("Pedido enviado correctamente."); 
-    
-    // clearCart(); // Descomentar al implementar la lógica
-    // navigate('/gracias'); // Descomentar al implementar la lógica
+    console.log("Pedido enviado correctamente.");
+    setShowNotification(true);
+    setTimeout(() => {
+      setShowNotification(false);
+      navigate("/"); 
+    }, 1000);
   };
 
   return (
     <div className="container py-5">
+      {showNotification && (
+        <div className={`notification ${showNotification ? "show" : ""}`}>
+           Compra realizada con éxito
+        </div>
+      )}
+
       <div className="row g-4">
         {cart.length === 0 ? (
-           <div className="col-12 text-center py-5">
-              <i className="bi bi-cart-x display-1 text-muted"></i>
-              <h3 className="mt-3">Tu carrito está vacío.</h3>
-              <p className="text-muted">Agrega productos antes de ir al pago.</p>
-              <a href="/" className="btn btn-success mt-3">Volver a la tienda</a>
-           </div>
+          <div className="col-12 text-center py-5">
+            <i className="bi bi-cart-x display-1 text-muted"></i>
+            <h3 className="mt-3">Tu carrito está vacío.</h3>
+            <p className="text-muted">Agrega productos antes de ir al pago.</p>
+            <a href="/" className="btn btn-success mt-3">
+              Volver a la tienda
+            </a>
+          </div>
         ) : (
           <>
             <div className="col-lg-7">
               <h2 className="mb-4 fw-bold">Información de envío y pago</h2>
-              <CheckoutForm onSubmit={handleSubmit} /> 
-
+              <CheckoutForm onSubmit={handleSubmit} />
             </div>
 
             <div className="col-lg-5">
               <div className="card shadow-sm p-3">
                 <h5 className="fw-bold mb-3">Resumen del pedido</h5>
-                
+
                 <div className="list-group">
                   {cart.map((item) => (
                     <div
@@ -41,7 +54,11 @@ const Checkout = () => {
                       className="d-flex align-items-center mb-3 border-bottom pb-2"
                     >
                       <img
-                        src={item.image ? `/images/${item.image}` : "/images/placeholder.png"}
+                        src={
+                          item.image
+                            ? `/images/${item.image}`
+                            : "/images/placeholder.png"
+                        }
                         alt={item.name || "Producto"}
                         width="60"
                         height="60"
@@ -68,7 +85,9 @@ const Checkout = () => {
 
                 <div className="d-flex justify-content-between fw-bold mt-3 border-top pt-3">
                   <span>Total:</span>
-                  <span className="text-success">${totalAmount.toLocaleString("es-CL")}</span>
+                  <span className="text-success">
+                    ${totalAmount.toLocaleString("es-CL")}
+                  </span>
                 </div>
               </div>
             </div>
