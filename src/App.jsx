@@ -13,6 +13,7 @@ import Login from './Pages/Login';
 import AdminPanel from './Pages/AdminPanel';
 import ProductsList from './components/ProductList';
 import Checkout from './Pages/Checkout';
+import UserList from './components/UserList';
 
 
 const MainLayout = ({ children }) => (
@@ -46,7 +47,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
-              <Route path="/admin/usuarios" element={<AdminLayout><AdminPanel /></AdminLayout>} />
+              <Route path="/admin/usuarios" element={<AdminLayout><UserList /></AdminLayout>} />
               <Route path="/admin/ventas" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/pedidos" element={<AdminLayout><AdminPanel /></AdminLayout>} />
             </Route>
