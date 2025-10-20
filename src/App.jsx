@@ -1,63 +1,57 @@
-
-import { Routes, Route } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CustomAlert from './components/CustomAlert';
 import Home from './Pages/Home';
-import Dulces from './Pages/Dulces';
 import Frutas from './Pages/Frutas';
+import Dulces from './Pages/Dulces';
 import SobreNosotros from './Pages/SobreNosotros';
 import Login from './Pages/Login';
 import AdminPanel from './Pages/AdminPanel';
-import ProtectedRoute from './components/ProtectedRoute';
 import ProductsList from './components/ProductList';
 
+const MainLayout = ({ children }) => (
+  <div id="app-container" className="d-flex flex-column min-vh-100">
+    <Navbar />
+    <main className="flex-grow-1">{children}</main>
+    <Footer />
+    <CustomAlert />
+  </div>
+);
+
+const AdminLayout = ({ children }) => (
+  <div id="admin-container" className="d-flex flex-column min-vh-100">
+    <main className="flex-grow-1">{children}</main>
+  </div>
+);
 
 
 function App() {
   return (
-    <CartProvider>
-<<<<<<< HEAD
-      <Router>
-        <Navbar />
-        
-        <main style={{ minHeight: 'calc(100vh - 100px)' }}>
+    <BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/dulces" element={<Dulces />} />
-            <Route path="/frutas" element={<Frutas />} />
-            <Route path="/sobre-nosotros" element={<SobreNosotros />} />
-            <Route path='/checkout' element={<Login />}/>
-            <Route path='/login' element={<Login />} />
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
+            <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
+            <Route path="/nosotros" element={<MainLayout><SobreNosotros /></MainLayout>} />
+            <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
             <Route element={<ProtectedRoute />}>
-              <Route path='/admin' element={<AdminPanel />} />
-              <Route path='/admin/productos' element={<ProductsList />} />
+              <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
+              <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
+              <Route path="/admin/usuarios" element={<AdminLayout><AdminPanel /></AdminLayout>} />
+              <Route path="/admin/ventas" element={<AdminLayout><AdminPanel /></AdminLayout>} />
+              <Route path="/admin/pedidos" element={<AdminLayout><AdminPanel /></AdminLayout>} />
             </Route>
-            <Route path="*" element={<Home />} />
-=======
-      
-      <Navbar />
-      
-      <main style={{ minHeight: 'calc(100vh - 100px)' }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/dulces" element={<Dulces />} />
-          <Route path="/frutas" element={<Frutas />} />
-          <Route path="/quienes-somos" element={<SobreNosotros />} />
-          <Route path='/login' element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path='/admin' element={<AdminPanel />} />
-            <Route path='/admin/productos' element={<ProductsList />} />
-          </Route>
-          <Route path="*" element={<Home />} />
->>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
-            
-        </Routes>
-      </main>
-      
-      <Footer />
-      
-    </CartProvider>
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

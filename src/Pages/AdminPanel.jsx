@@ -8,7 +8,7 @@ const DashboardCard = ({ title, description, icon, route }) => {
   
   return (
     <div 
-      className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
+      className="col-md-3 mb-4"
       onClick={() => navigate(route)}
       style={{ cursor: 'pointer' }}
     >
@@ -33,35 +33,35 @@ function AdminPanel() {
 
       <div className="container py-5">
         
-        <h1 className="text-center mb-5 display-5 fw-normal">Dashboard</h1>
+        <h1 className="text-center mb-5 display-5 fw-normal">Dashboard de EcoMarket</h1>
 
         <div className="row justify-content-center">
           
           <DashboardCard
             title="Usuarios"
             description="Gestionar usuarios del sistema"
-            icon={<i className="bi bi-people-fill"></i>}
+            icon="👥"
             route="/admin/usuarios"
           />
 
           <DashboardCard
             title="Productos"
-            description="Administrar catálogo de productos"
-            icon={<i className="bi bi-tags-fill"></i>}
+            description="Administrar catálogo de productos y stock"
+            icon="🛍️"
             route="/admin/productos" 
           />
           
           <DashboardCard
             title="Ventas"
             description="Ver y administrar ventas realizadas"
-            icon={<i className="bi bi-cart-check-fill"></i>}
+            icon="🛒"
             route="/admin/ventas"
           />
           
           <DashboardCard
             title="Pedidos"
             description="Gestionar pedidos y envíos"
-            icon={<i className="bi bi-box-seam-fill"></i>}
+            icon="📦"
             route="/admin/pedidos"
           />
           
