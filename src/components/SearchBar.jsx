@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 
+
 const SearchBar = () => {
   const { handleSearch } = useCart();
   const [input, setInput] = useState('');
 
   const filterProducts = (e) => {
     e.preventDefault();
-    handleSearch(input); // Actualiza el término de búsqueda en el contexto
+    handleSearch(input); 
   };
 
   return (

@@ -1,9 +1,22 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import SearchBar from './SearchBar';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const Navbar = () => {
   const { cart, totalItems, totalAmount, removeFromCart, processPayment } = useCart();
+  const navigate = useNavigate();
+
+  const handleGoToCheckout = () => {
+    // 1. Ocultar el modal del carrito
+    const cartModalElement = document.getElementById('cartModal');
+    if (cartModalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(cartModalElement) || new bootstrap.Modal(cartModalElement);
+        modalInstance.hide();
+    }
+    
+    navigate('../Pages/Checkout' );
+  };
 
   const renderCartItems = () => {
     if (cart.length === 0) {
@@ -105,7 +118,7 @@ const Navbar = () => {
               <span className="fw-bold">Total: <span id="cart-total">${totalAmount.toLocaleString('es-CL')}</span></span>
               <div>
                 <button className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button className="btn btn-success" id="btn-pagar" onClick={processPayment} data-bs-dismiss="modal">Ir al pago</button>
+                <button className="btn btn-success" id="btn-pagar" onClick={handleGoToCheckout} data-bs-dismiss="modal">Ir al pago</button>
               </div>
             </div>
           </div>

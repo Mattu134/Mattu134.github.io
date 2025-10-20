@@ -12,13 +12,11 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const success = login(username, password);
-    // Si la autenticación es exitosa, navega al panel de administración.
     if (success) navigate("/admin");
     else setError(true);
   };
 
   return (
-    //Un fondo limpio para la imagen
     <div className="bg-light container-fluid vh-100 d-flex justify-content-center align-items-center">
       <div className="card border-0 shadow-lg p-4 p-md-5" style={{ width: "100%", maxWidth: "420px" }}>
         <div className="text-center mb-4">

@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
+
+/**
+ * Muestra un modal personalizado.
+ * @param {string} message - Mensaje a mostrar
+ */
 
 // Función para mostrar un modal personalizado
 const showCustomModal = (message) => {
@@ -40,7 +46,6 @@ export const CartProvider = ({ children }) => {
                 return [...currentCart, { id: productId, name: productName, price: productPrice, quantity: 1 }];
             }
         });
-        showCustomModal(`"${productName}" añadido al carrito.`);
     }, []);
 
     // Logica para eliminar un producto del carrito

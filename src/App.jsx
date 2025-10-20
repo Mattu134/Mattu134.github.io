@@ -20,11 +20,11 @@ function App() {
         
         <main style={{ minHeight: 'calc(100vh - 100px)' }}>
           <Routes>
-
             <Route path="/" element={<Home />} />
             <Route path="/dulces" element={<Dulces />} />
             <Route path="/frutas" element={<Frutas />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+            <Route path='/checkout' element={<Login />}/>
             <Route path='/login' element={<Login />} />
             <Route element={<ProtectedRoute />}>
               <Route path='/admin' element={<AdminPanel />} />

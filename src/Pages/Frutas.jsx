@@ -1,14 +1,34 @@
-import { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
-import { getProductsByCategory } from '../data';
+import { fetchProducts } from '../services/productServices';
+;
 
 const Frutas = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { searchTerm } = useCart();
-  const allProducts = useMemo(() => getProductsByCategory('Frutas'), []);
 
-  const filteredProducts = allProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm)
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchProducts({ category: 'Frutas' });
+        
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener frutas:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -18,14 +38,18 @@ const Frutas = () => {
       </section>
 
       <div className="container my-5">
-        <div className="row g-4 product-grid">
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-          {filteredProducts.length === 0 && (
-            <p className="text-center text-muted col-12">No se encontraron frutas con el término "{searchTerm}".</p>
-          )}
-        </div>
+        {loading && <p className="text-center">Cargando frutas...</p>}
+        
+        {!loading && (
+            <div className="row g-4 product-grid">
+            {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} />
+            ))}
+            {filteredProducts.length === 0 && (
+                <p className="text-center text-muted col-12">No se encontraron frutas con el término "{searchTerm}".</p>
+            )}
+            </div>
+        )}
       </div>
     </>
   );
