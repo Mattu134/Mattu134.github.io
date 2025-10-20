@@ -12,7 +12,6 @@ function ProductsList() {
   };
 
   const handleDelete = (id) => {
-    // Implementación temporal: elimina de la lista local
     if (window.confirm(`¿Estás seguro de eliminar el producto ${id}?`)) {
       setProductos(productos.filter(p => p.id !== id));
       console.log(`[ACTION] Producto con ID ${id} eliminado.`);
@@ -21,7 +20,7 @@ function ProductsList() {
     
   return (
     <div className="bg-light min-vh-100"> 
-      <AdminHeader /> {/* Incluimos el header para la navegación admin */}
+      <AdminHeader /> 
       <div className="container py-5">
         
         <div className="d-flex justify-content-between align-items-center mb-4">

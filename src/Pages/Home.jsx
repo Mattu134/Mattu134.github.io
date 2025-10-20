@@ -14,7 +14,6 @@ const Home = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // El parámetro { offers: true } le indica al servicio que use el slice(0, 5)
         const data = await fetchProducts({ offers: true });
         setProducts(data);
       } catch (error) {

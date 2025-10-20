@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CustomAlert from './components/CustomAlert';
@@ -13,6 +12,8 @@ import SobreNosotros from './Pages/SobreNosotros';
 import Login from './Pages/Login';
 import AdminPanel from './Pages/AdminPanel';
 import ProductsList from './components/ProductList';
+import Checkout from './Pages/Checkout';
+
 
 const MainLayout = ({ children }) => (
   <div id="app-container" className="d-flex flex-column min-vh-100">
@@ -40,6 +41,7 @@ function App() {
             <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
             <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
             <Route path="/nosotros" element={<MainLayout><SobreNosotros /></MainLayout>} />
+            <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
             <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />

@@ -35,7 +35,7 @@ export const CartProvider = ({ children }) => {
     }, [cart]);
 
     // Logica para agregar un producto al carrito
-    const addToCart = useCallback((productName, productPrice, productId) => {
+    const addToCart = useCallback((productName, productPrice, productId,productImage) => {
         setCart(currentCart => {
             const existing = currentCart.find(item => item.id === productId);
             if (existing) {
@@ -43,7 +43,7 @@ export const CartProvider = ({ children }) => {
                     item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
                 );
             } else {
-                return [...currentCart, { id: productId, name: productName, price: productPrice, quantity: 1 }];
+                return [...currentCart, { id: productId, name: productName, price: productPrice, quantity: 1,image: productImage } ];
             }
         });
     }, []);
