@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import { Routes, Route } from 'react-router-dom'; 
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -12,9 +13,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProductsList from './components/ProductList';
 
 
+
 function App() {
   return (
     <CartProvider>
+<<<<<<< HEAD
       <Router>
         <Navbar />
         
@@ -31,12 +34,29 @@ function App() {
               <Route path='/admin/productos' element={<ProductsList />} />
             </Route>
             <Route path="*" element={<Home />} />
+=======
+      
+      <Navbar />
+      
+      <main style={{ minHeight: 'calc(100vh - 100px)' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dulces" element={<Dulces />} />
+          <Route path="/frutas" element={<Frutas />} />
+          <Route path="/quienes-somos" element={<SobreNosotros />} />
+          <Route path='/login' element={<Login />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path='/admin' element={<AdminPanel />} />
+            <Route path='/admin/productos' element={<ProductsList />} />
+          </Route>
+          <Route path="*" element={<Home />} />
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
             
-          </Routes>
-        </main>
-        
-        <Footer />
-      </Router>
+        </Routes>
+      </main>
+      
+      <Footer />
+      
     </CartProvider>
   );
 }

@@ -8,7 +8,7 @@ const DashboardCard = ({ title, description, icon, route }) => {
   
   return (
     <div 
-      className="col-md-3 mb-4"
+      className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
       onClick={() => navigate(route)}
       style={{ cursor: 'pointer' }}
     >
@@ -40,31 +40,31 @@ function AdminPanel() {
           <DashboardCard
             title="Usuarios"
             description="Gestionar usuarios del sistema"
-            icon="👥"
+            icon={<i className="bi bi-people-fill"></i>}
             route="/admin/usuarios"
           />
 
           <DashboardCard
             title="Productos"
             description="Administrar catálogo de productos"
-            icon="🛍️"
+            icon={<i className="bi bi-tags-fill"></i>}
             route="/admin/productos" 
           />
           
           <DashboardCard
             title="Ventas"
             description="Ver y administrar ventas realizadas"
-            icon="🛒"
+            icon={<i className="bi bi-cart-check-fill"></i>}
             route="/admin/ventas"
           />
           
           <DashboardCard
             title="Pedidos"
             description="Gestionar pedidos y envíos"
-            icon="📋"
+            icon={<i className="bi bi-box-seam-fill"></i>}
             route="/admin/pedidos"
           />
-
+          
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const SobreNosotros = () => {
@@ -20,7 +19,6 @@ const SobreNosotros = () => {
                 </p>
               </div>
               <div className="col-md-6 text-center">
-                {}
                 <img src="/images/fruta.jpg" alt="Frutas frescas" className="img-fluid rounded shadow-sm" />
               </div>
             </div>

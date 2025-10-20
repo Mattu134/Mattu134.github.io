@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { fetchProducts } from '../services/productServices';
+=======
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
 import Hero from '../components/Hero';
 import Contact from '../components/Contact';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 
 const Home = () => {
+<<<<<<< HEAD
+=======
+  //  Estado para almacenar los productos y manejar la carga
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { searchTerm } = useCart();
   
+<<<<<<< HEAD
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -19,6 +27,27 @@ const Home = () => {
         
         setProducts(data);
 
+=======
+  //  useEffect para simular el fetch de datos desde una API
+  useEffect(() => {
+    const fetchOffers = async () => {
+      setLoading(true);
+      try {
+        // Reemplaza 'URL_DE_TU_API' por la URL real de tu backend
+        const response = await fetch('URL_DE_TU_API/productos?offer=true'); 
+        
+        let data;
+        if (response.ok) {
+            data = await response.json();
+        } else {
+             // Si no tienes API, puedes descomentar la importación de datos locales aquí
+             // const { getInitialOfferProducts } = await import('../data');
+             // data = getInitialOfferProducts(); 
+             data = [];
+        }
+
+        setProducts(data);
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
       } catch (error) {
         console.error('Error al obtener ofertas:', error);
       } finally {
@@ -26,9 +55,16 @@ const Home = () => {
       }
     };
 
+<<<<<<< HEAD
     loadData();
   }, []);
 
+=======
+    fetchOffers();
+  }, []);
+
+  // Filtrado de productos
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );

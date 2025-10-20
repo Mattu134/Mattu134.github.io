@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const AdminHeader = () => {
@@ -14,8 +14,9 @@ const AdminHeader = () => {
   return (
     <nav className="navbar navbar-expand navbar-light bg-white border-bottom shadow-sm">
       <div className="container-fluid px-5">   
-        <a className="navbar-brand d-flex align-items-center" href="/admin">
-        </a>
+        <Link className="navbar-brand d-flex align-items-center fw-bold text-success" to="/admin">
+            ECO MARKET - ADMIN
+        </Link>
 
         <div className="d-flex align-items-center">
           <span className="navbar-text me-3 text-muted">

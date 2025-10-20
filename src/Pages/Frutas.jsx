@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
+<<<<<<< HEAD
 import { fetchProducts } from '../services/productServices';
 ;
 
@@ -19,14 +20,53 @@ const Frutas = () => {
         setProducts(data);
       } catch (error) {
         console.error('Error al obtener frutas:', error);
+=======
+
+const Frutas = () => {
+  //  Estado para almacenar los productos y manejar la carga
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); 
+  const { searchTerm } = useCart();
+
+  // useEffect para simular el fetch de datos desde una API
+  useEffect(() => {
+    const fetchFrutas = async () => {
+      setLoading(true);
+      try {
+        //Reemplaza 'URL_DE_TU_API' por la URL real de tu backend
+        const response = await fetch('URL_DE_TU_API/productos?category=frutas'); 
+        
+        // Simulación de respuesta de API (usar datos locales si el fetch falla)
+        let data;
+        if (response.ok) {
+            data = await response.json();
+        } else {
+             // 💡 Si no tienes API, puedes descomentar la importación de datos locales aquí
+             // const { getProductsByCategory } = await import('../data');
+             // data = getProductsByCategory('Frutas'); 
+             data = []; // O dejar vacío para que muestre el mensaje de no encontrado
+        }
+
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener frutas:', error);
+        // Si hay un error, puedes establecer un estado de error
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
       } finally {
         setLoading(false);
       }
     };
 
+<<<<<<< HEAD
     loadData();
   }, []);
 
+=======
+    fetchFrutas();
+  }, []); // El array vacío asegura que se ejecute una sola vez al montar
+
+  // 3. Filtrado de productos (funciona igual, ahora sobre el estado)
+>>>>>>> f77728c43aaa4fbe583282363bc9707c467b9dc9
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
