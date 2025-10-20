@@ -104,3 +104,9 @@ export const fetchProductById = (productId) => {
     }, API_DELAY); // API_DELAY debe estar definido arriba
   });
 };
+// --- FUNCIÓN SÓLO PARA TESTING ---
+// Esto reinicia la base de datos en memoria a su estado original
+export const resetDatabaseForTests = () => {
+  // 'productsDB' e 'initialProducts' deben estar definidos arriba
+  productsDB = [...initialProducts];
+};
