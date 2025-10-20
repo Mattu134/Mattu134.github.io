@@ -141,6 +141,17 @@ const Navbar = () => {
                   <i className="bi bi-telephone"></i> Contáctanos
                 </Link>
               </li>
+              
+              {/* === NUEVO ENLACE: BLOG === */}
+              <li className="nav-item">
+                <NavLink 
+                  className="nav-link fw-semibold text-success" 
+                  to="/blog"
+                >
+                  <i className="bi bi-newspaper"></i> Blog
+                </NavLink>
+              </li>
+              {/* ========================== */}
 
               <li className="nav-item dropdown">
                 <a

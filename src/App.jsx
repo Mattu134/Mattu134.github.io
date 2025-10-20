@@ -14,6 +14,8 @@ import AdminPanel from './Pages/AdminPanel';
 import ProductsList from './components/ProductList';
 import Checkout from './Pages/Checkout';
 import UserList from './components/UserList';
+import Blog from './Pages/Blog';
+import BlogPostDetail from './Pages/BlogPostDetail';
 
 
 const MainLayout = ({ children }) => (
@@ -44,6 +46,8 @@ function App() {
             <Route path="/quienes-somos" element={<MainLayout><SobreNosotros /></MainLayout>} />
             <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
             <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
+            <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} /> 
+            <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
