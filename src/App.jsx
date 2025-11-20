@@ -16,6 +16,8 @@ import Checkout from './Pages/Checkout';
 import UserList from './components/UserList';
 import Blog from './Pages/Blog';
 import BlogPostDetail from './Pages/BlogPostDetail';
+import Ofertas from './Pages/Ofertas';
+import Carnes from './Pages/Carnes';
 
 
 const MainLayout = ({ children }) => (
@@ -44,9 +46,11 @@ function App() {
             <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
             <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
             <Route path="/quienes-somos" element={<MainLayout><SobreNosotros /></MainLayout>} />
+            <Route path="/ofertas" element={<MainLayout><Ofertas /></MainLayout>} />
             <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
             <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
-            <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} /> 
+            <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} />
+            <Route path='/carnes' element={<MainLayout><Carnes /></MainLayout>} /> 
             <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />

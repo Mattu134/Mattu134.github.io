@@ -15,7 +15,6 @@ const Navbar = () => {
         new bootstrap.Modal(cartModalElement);
       modalInstance.hide();
     }
-    // ✅ CORRECCIÓN DE RUTA URL
     navigate("/checkout");
   };
 
@@ -118,7 +117,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link fw-semibold text-success"
-                  to="/#ofertas"
+                  to="/ofertas"
                 >
                   <i className="bi bi-tags"></i> Ofertas
                 </Link>
@@ -141,9 +140,7 @@ const Navbar = () => {
                   <i className="bi bi-telephone"></i> Contáctanos
                 </Link>
               </li>
-              
-              {/* === NUEVO ENLACE: BLOG === */}
-              <li className="nav-item">
+                            <li className="nav-item">
                 <NavLink 
                   className="nav-link fw-semibold text-success" 
                   to="/blog"
@@ -151,7 +148,6 @@ const Navbar = () => {
                   <i className="bi bi-newspaper"></i> Blog
                 </NavLink>
               </li>
-              {/* ========================== */}
 
               <li className="nav-item dropdown">
                 <a
@@ -164,14 +160,15 @@ const Navbar = () => {
                 </a>
                 <ul className="dropdown-menu">
                   <li>
-                    <Link className="dropdown-item" to="/dulces">
-                      Dulces
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/frutas">
-                      Frutas
-                    </Link>
+                    <Link className="dropdown-item" to="/dulces">Dulces </Link>
+                    <Link className="dropdown-item" to="/frutas">Frutas </Link>
+                    <Link className="dropdown-item" to="/verduras">Verduras </Link>
+                    <Link className="dropdown-item" to="/lacteos">Lácteos </Link>
+                    <Link className="dropdown-item" to="/carnes">Carnes </Link>
+                    <Link className="dropdown-item" to="/bebidas">Bebidas </Link>
+                    <Link className="dropdown-item" to="/congelados">Congelados </Link>
+                    
+
                   </li>
                 </ul>
               </li>
