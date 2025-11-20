@@ -8,11 +8,11 @@ const DashboardCard = ({ title, description, icon, route }) => {
   return (
     <div className="col-12 col-sm-6 col-lg-3 mb-4">
       <div
-        className="card h-100 p-4 shadow-sm border-0 dashboard-card"
+        className="card h-100 p-4 shadow-sm border-0"
         style={{
           cursor: "pointer",
           borderRadius: "1rem",
-          transition: "transform 0.15s ease, box-shadow 0.15s ease"
+          transition: "transform 0.15s ease, box-shadow 0.15s ease",
         }}
         onClick={() => navigate(route)}
         onMouseEnter={(e) => {
@@ -33,7 +33,7 @@ const DashboardCard = ({ title, description, icon, route }) => {
               margin: "0 auto",
               borderRadius: "50%",
               backgroundColor: "rgba(25,135,84,0.08)",
-              fontSize: "2.3rem"
+              fontSize: "2.3rem",
             }}
           >
             {icon}
@@ -55,7 +55,10 @@ function AdminPanel() {
 
       <div className="container py-5">
         <div className="text-center mb-5">
-          <p className="text-uppercase text-success fw-semibold mb-1" style={{ letterSpacing: "0.12em" }}>
+          <p
+            className="text-uppercase text-success fw-semibold mb-1"
+            style={{ letterSpacing: "0.12em" }}
+          >
             Panel de administración
           </p>
           <h1 className="display-5 fw-semibold mb-2">Dashboard de EcoMarket</h1>

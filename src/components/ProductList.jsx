@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import AdminHeader from "./AdminHeader";
-import { fetchProducts } from "../services/productServices";
 
 function ProductsList() {
   const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+  // Cargar productos desde data.json
   useEffect(() => {
     const cargarProductos = async () => {
       try {
-        setLoading(true);
-        const data = await fetchProducts();
-        setProductos(data);
+        const response = await axios.get("/data/data.json");
+        setProductos(response.data.products || []);
       } catch (error) {
-        console.error("Error al cargar productos en admin:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error al cargar productos:", error);
       }
     };
 
@@ -24,11 +21,12 @@ function ProductsList() {
 
   const handleEdit = (id) => {
     console.log(`[ACTION] Editar producto con ID: ${id}`);
+    // Aquí iría la lógica real del modal/formulario de edición
   };
 
   const handleDelete = (id) => {
     if (window.confirm(`¿Estás seguro de eliminar el producto ${id}?`)) {
-      setProductos((prev) => prev.filter((p) => p.id !== id));
+      setProductos(productos.filter((p) => p.id !== id));
       console.log(`[ACTION] Producto con ID ${id} eliminado.`);
     }
   };
@@ -36,6 +34,7 @@ function ProductsList() {
   return (
     <div className="bg-light min-vh-100">
       <AdminHeader />
+
       <div className="container py-5">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="fw-normal display-5">Administración de Productos</h1>
@@ -50,45 +49,31 @@ function ProductsList() {
 
         <div className="card shadow-sm border-0">
           <div className="card-body p-0">
-            {loading ? (
-              <p className="text-center py-4">Cargando productos...</p>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-striped table-hover mb-0">
-                  <thead>
-                    <tr className="bg-success text-white">
-                      <th scope="col" className="p-3">
-                        ID
-                      </th>
-                      <th scope="col" className="p-3">
-                        Nombre
-                      </th>
-                      <th scope="col" className="p-3">
-                        Precio
-                      </th>
-                      <th scope="col" className="p-3">
-                        Stock
-                      </th>
-                      <th scope="col" className="p-3">
-                        Lote
-                      </th>
-                      <th scope="col" className="p-3">
-                        Expiración
-                      </th>
-                      <th scope="col" className="p-3">
-                        Proveedor
-                      </th>
-                      <th scope="col" className="p-3 text-center">
-                        Acciones
-                      </th>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover mb-0">
+                <thead>
+                  <tr className="bg-success text-white">
+                    <th className="p-3">ID</th>
+                    <th className="p-3">Nombre</th>
+                    <th className="p-3">Precio</th>
+                    <th className="p-3">Stock</th>
+                    <th className="p-3">Lote</th>
+                    <th className="p-3">Expiración</th>
+                    <th className="p-3">Proveedor</th>
+                    <th className="p-3 text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productos.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="text-center py-4 text-muted">
+                        No hay productos disponibles.
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {productos.map((producto) => (
+                  ) : (
+                    productos.map((producto) => (
                       <tr key={producto.id}>
-                        <th scope="row" className="p-3 text-muted">
-                          {producto.id}
-                        </th>
+                        <td className="p-3 text-muted">{producto.id}</td>
                         <td className="p-3 fw-semibold">{producto.name}</td>
                         <td className="p-3 text-success fw-bold">
                           ${producto.price.toLocaleString("es-CL")}
@@ -110,6 +95,7 @@ function ProductsList() {
                           >
                             Editar
                           </button>
+
                           <button
                             className="btn btn-sm fw-bold"
                             style={{
@@ -123,13 +109,14 @@ function ProductsList() {
                           </button>
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   );

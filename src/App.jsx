@@ -60,6 +60,8 @@ function App() {
             <Route path="/aseo" element={<MainLayout><Aseo /></MainLayout>} />
             <Route path="/congelados" element={<MainLayout><Congelados /></MainLayout>} />
             <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
+            <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} /> 
+            <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
