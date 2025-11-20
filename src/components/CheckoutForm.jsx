@@ -1,5 +1,6 @@
+// src/components/CheckoutForm.jsx
 import { useState, useEffect } from "react";
-import regionesData from "../data/Regiones-Comunas";
+import { fetchRegiones } from "../services/regionesServices";
 
 const CheckoutForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -17,20 +18,25 @@ const CheckoutForm = ({ onSubmit }) => {
     guardarInfo: false,
   });
 
+  const [regiones, setRegiones] = useState([]);
   const [comunas, setComunas] = useState([]);
   const [errors, setErrors] = useState({});
 
-  const dataRegiones = Array.isArray(regionesData.regiones)
-    ? regionesData.regiones
-    : [];
+  useEffect(() => {
+    const cargarRegiones = async () => {
+      const data = await fetchRegiones();
+      setRegiones(data);
+    };
+    cargarRegiones();
+  }, []);
 
   useEffect(() => {
-    const regionSeleccionada = dataRegiones.find(
+    const regionSeleccionada = regiones.find(
       (r) => r.nombre === formData.region
     );
     setComunas(regionSeleccionada ? regionSeleccionada.comunas : []);
     setFormData((prev) => ({ ...prev, comuna: "" }));
-  }, [formData.region]);
+  }, [formData.region, regiones]);
 
   const validate = () => {
     const newErrors = {};
@@ -165,7 +171,7 @@ const CheckoutForm = ({ onSubmit }) => {
             required
           >
             <option value="">Seleccione Región</option>
-            {dataRegiones.map((r, idx) => (
+            {regiones.map((r, idx) => (
               <option key={idx} value={r.nombre}>
                 {r.nombre}
               </option>

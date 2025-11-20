@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin Principal",
+      "email": "admin@ecomarket.cl",
+      "role": "Administrador",
+      "status": "Activo",
+      "createdAt": "2024-01-10"
+    },
+    {
+      "id": 2,
+      "name": "Matías Robles",
+      "email": "matias@ecomarket.cl",
+      "role": "Vendedor",
+      "status": "Activo",
+      "createdAt": "2024-03-05"
+    },
+    {
+      "id": 3,
+      "name": "Carolina Pérez",
+      "email": "carolina@example.com",
+      "role": "Cliente",
+      "status": "Activo",
+      "createdAt": "2024-04-12"
+    },
+    {
+      "id": 4,
+      "name": "Juan Soto",
+      "email": "juan.soto@example.com",
+      "role": "Cliente",
+      "status": "Suspendido",
+      "createdAt": "2024-02-20"
+    },
+    {
+      "id": 5,
+      "name": "Soporte EcoMarket",
+      "email": "soporte@ecomarket.cl",
+      "role": "Soporte",
+      "status": "Activo",
+      "createdAt": "2024-01-25"
+    }
+  ]
+}

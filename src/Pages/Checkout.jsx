@@ -8,8 +8,6 @@ const Checkout = () => {
     console.log("Datos del pedido:", formData);
     console.log("Pedido enviado correctamente."); 
     
-    // clearCart(); // Descomentar al implementar la lógica
-    // navigate('/gracias'); // Descomentar al implementar la lógica
   };
 
   return (

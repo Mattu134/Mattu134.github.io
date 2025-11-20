@@ -13,6 +13,16 @@ import Login from './Pages/Login';
 import AdminPanel from './Pages/AdminPanel';
 import ProductsList from './components/ProductList';
 import Checkout from './Pages/Checkout';
+import Carnes from './Pages/Carnes';
+import Pescados from './Pages/Pescados';
+import Panaderia from './Pages/Panaderia';
+import Lacteos from './Pages/Lacteos';
+import Bebestibles from './Pages/Bebestibles';
+import Aseo from './Pages/Aseo';
+import Congelados from './Pages/Congelados';
+import UsersList from './components/UserLists';
+import Ofertas from './Pages/Ofertas';
+
 
 
 const MainLayout = ({ children }) => (
@@ -30,7 +40,6 @@ const AdminLayout = ({ children }) => (
   </div>
 );
 
-
 function App() {
   return (
     <BrowserRouter>
@@ -41,12 +50,20 @@ function App() {
             <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
             <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
             <Route path="/nosotros" element={<MainLayout><SobreNosotros /></MainLayout>} />
+            <Route path="/ofertas" element={<MainLayout><Ofertas /></MainLayout>} />
             <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
+            <Route path="/carnes" element={<MainLayout><Carnes /></MainLayout>} />
+            <Route path="/pescados" element={<MainLayout><Pescados /></MainLayout>} />
+            <Route path="/panaderia" element={<MainLayout><Panaderia /></MainLayout>} />
+            <Route path="/lacteos" element={<MainLayout><Lacteos /></MainLayout>} />
+            <Route path="/bebestibles" element={<MainLayout><Bebestibles /></MainLayout>} />
+            <Route path="/aseo" element={<MainLayout><Aseo /></MainLayout>} />
+            <Route path="/congelados" element={<MainLayout><Congelados /></MainLayout>} />
             <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
             <Route element={<ProtectedRoute />}>
               <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
-              <Route path="/admin/usuarios" element={<AdminLayout><AdminPanel /></AdminLayout>} />
+              <Route path="/admin/usuarios" element={<AdminLayout><UsersList /></AdminLayout>} />
               <Route path="/admin/ventas" element={<AdminLayout><AdminPanel /></AdminLayout>} />
               <Route path="/admin/pedidos" element={<AdminLayout><AdminPanel /></AdminLayout>} />
             </Route>
@@ -58,3 +75,4 @@ function App() {
 }
 
 export default App;
+

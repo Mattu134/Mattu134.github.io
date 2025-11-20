@@ -15,7 +15,6 @@ const Navbar = () => {
         new bootstrap.Modal(cartModalElement);
       modalInstance.hide();
     }
-    // ✅ CORRECCIÓN DE RUTA URL
     navigate("/checkout");
   };
 
@@ -30,7 +29,7 @@ const Navbar = () => {
     }
 
     return (
-     <ul className="list-group list-group-flush">
+      <ul className="list-group list-group-flush">
         {cart.map((item) => {
           const priceTotal = item.price * item.quantity;
           const imageUrl = item.image
@@ -116,29 +115,14 @@ const Navbar = () => {
               </li>
 
               <li className="nav-item">
-                <Link
-                  className="nav-link fw-semibold text-success"
-                  to="/#ofertas"
-                >
+                <Link className="nav-link fw-semibold text-success" to="/ofertas">
                   <i className="bi bi-tags"></i> Ofertas
                 </Link>
               </li>
 
               <li className="nav-item">
-                <Link
-                  className="nav-link fw-semibold text-success"
-                  to="/quienes-somos"
-                >
+                <Link className="nav-link fw-semibold text-success" to="/nosotros">
                   <i className="bi bi-people"></i> Quienes somos
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link
-                  className="nav-link fw-semibold text-success"
-                  to="/#contacto"
-                >
-                  <i className="bi bi-telephone"></i> Contáctanos
                 </Link>
               </li>
 
@@ -152,22 +136,28 @@ const Navbar = () => {
                   <i className="bi bi-list"></i> Categorías
                 </a>
                 <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/dulces">
-                      Dulces
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/frutas">
-                      Frutas
-                    </Link>
-                  </li>
+                  <li><Link className="dropdown-item" to="/dulces">Dulces</Link></li>
+                  <li><Link className="dropdown-item" to="/frutas">Frutas</Link></li>
+                  <li><Link className="dropdown-item" to="/carnes">Carnes</Link></li>
+                  <li><Link className="dropdown-item" to="/pescados">Pescados</Link></li>
+                  <li><Link className="dropdown-item" to="/panaderia">Panadería</Link></li>
+                  <li><Link className="dropdown-item" to="/lacteos">Lácteos</Link></li>
+                  <li><Link className="dropdown-item" to="/bebestibles">Bebestibles</Link></li>
+                  <li><Link className="dropdown-item" to="/aseo">Aseo</Link></li>
+                  <li><Link className="dropdown-item" to="/congelados">Congelados</Link></li>
                 </ul>
+              </li>
+
+              <li className="nav-item">
+                <Link className="nav-link fw-semibold text-success" to="/#contacto">
+                  <i className="bi bi-telephone"></i> Contáctanos
+                </Link>
               </li>
             </ul>
 
             <div className="d-flex align-items-center ms-4">
               <SearchBar />
+
               <Link to="/admin" className="btn btn-outline-success me-3">
                 <i className="bi bi-person-circle"></i>
               </Link>
