@@ -20,11 +20,9 @@ function ProductsList() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
 
-  // Estados para Modal Agregar
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProductData, setNewProductData] = useState(initialState);
 
-  // Estados para Modal Editar
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -52,7 +50,6 @@ function ProductsList() {
     setter(prevData => ({ ...prevData, [name]: finalValue }));
   };
 
-  // --- Funciones Modal Agregar ---
   const handleCloseAddModal = () => {
     setShowAddModal(false);
     setNewProductData(initialState);
@@ -77,7 +74,6 @@ function ProductsList() {
     }
   };
 
-  // --- Funciones Modal Editar ---
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditingProduct(null);
@@ -114,7 +110,6 @@ function ProductsList() {
       }
   };
 
-  // --- Función Borrar ---
   const handleDelete = async (id, name) => {
       if (!window.confirm(`¿Estás seguro de eliminar "${name}"?`)) return;
       try {
@@ -222,12 +217,10 @@ function ProductsList() {
         )}
       </div>
 
-      {/* --- MODAL AGREGAR (CON controlId) --- */}
       <Modal show={showAddModal} onHide={handleCloseAddModal} centered size="lg">
           <Modal.Header closeButton><Modal.Title>Agregar Nuevo Producto</Modal.Title></Modal.Header>
           <Form onSubmit={handleAddProduct}>
             <Modal.Body>
-              {/* 2. AÑADIMOS controlId A CADA Form.Group */}
               <Form.Group className="mb-3" controlId="addProductName">
                 <Form.Label>Nombre del Producto</Form.Label>
                 <Form.Control type="text" name="name" value={newProductData.name} onChange={(e) => handleFormChange(e, setNewProductData)} required />
@@ -299,7 +292,6 @@ function ProductsList() {
           </Form>
       </Modal>
 
-      {/* --- MODAL EDITAR (CON controlId) --- */}
       {editingProduct && (
         <Modal show={showEditModal} onHide={handleCloseEditModal} centered size="lg">
           <Modal.Header closeButton>
@@ -307,7 +299,6 @@ function ProductsList() {
           </Modal.Header>
           <Form onSubmit={handleUpdateProduct}>
             <Modal.Body>
-              {/* 3. AÑADIMOS controlId A CADA Form.Group */}
               <Form.Group className="mb-3" controlId="editProductName">
                 <Form.Label>Nombre del Producto</Form.Label>
                 <Form.Control type="text" name="name" value={editingProduct.name} onChange={(e) => handleFormChange(e, setEditingProduct)} required />

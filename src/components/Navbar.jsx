@@ -4,7 +4,14 @@ import SearchBar from "./SearchBar";
 import * as bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const Navbar = () => {
-  const { cart, totalItems, totalAmount, removeFromCart } = useCart();
+  const {
+    cart,
+    totalItems,
+    totalAmount,
+    removeFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useCart();
   const navigate = useNavigate();
 
   const handleGoToCheckout = () => {
@@ -29,12 +36,16 @@ const Navbar = () => {
     }
 
     return (
-     <ul className="list-group list-group-flush">
+      <ul className="list-group list-group-flush">
         {cart.map((item) => {
           const priceTotal = item.price * item.quantity;
+          const isExternalImage = item.image && item.image.startsWith("http");
           const imageUrl = item.image
-            ? `/images/${item.image}`
+            ? isExternalImage
+              ? item.image
+              : `/images/${item.image}`
             : "/images/default-product.png";
+
           return (
             <li
               key={item.id}
@@ -55,10 +66,34 @@ const Navbar = () => {
                   }}
                 />
                 <div>
-                  <p className="fw-semibold mb-0">{item.name}</p>
-                  <small className="text-muted">
-                    {item.quantity} x ${item.price.toLocaleString("es-CL")}
+                  <p className="fw-semibold mb-1">{item.name}</p>
+                  <small className="text-muted d-block mb-1">
+                    ${item.price.toLocaleString("es-CL")} c/u
                   </small>
+
+                  {/* Controles de cantidad */}
+                  <div className="btn-group btn-group-sm" role="group">
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={() => decreaseQuantity(item.id)}
+                    >
+                      <i className="bi bi-dash"></i>
+                    </button>
+                    <span
+                      className="btn btn-light disabled"
+                      style={{ minWidth: "40px" }}
+                    >
+                      {item.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary"
+                      onClick={() => increaseQuantity(item.id)}
+                    >
+                      <i className="bi bi-plus"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -135,14 +170,15 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className="nav-link fw-semibold text-success"
-                  to="/#contacto"
+                  to="/contacto"
                 >
                   <i className="bi bi-telephone"></i> Contáctanos
                 </Link>
               </li>
-                            <li className="nav-item">
-                <NavLink 
-                  className="nav-link fw-semibold text-success" 
+
+              <li className="nav-item">
+                <NavLink
+                  className="nav-link fw-semibold text-success"
                   to="/blog"
                 >
                   <i className="bi bi-newspaper"></i> Blog
@@ -160,15 +196,33 @@ const Navbar = () => {
                 </a>
                 <ul className="dropdown-menu">
                   <li>
-                    <Link className="dropdown-item" to="/dulces">Dulces </Link>
-                    <Link className="dropdown-item" to="/frutas">Frutas </Link>
-                    <Link className="dropdown-item" to="/verduras">Verduras </Link>
-                    <Link className="dropdown-item" to="/lacteos">Lácteos </Link>
-                    <Link className="dropdown-item" to="/carnes">Carnes </Link>
-                    <Link className="dropdown-item" to="/bebidas">Bebidas </Link>
-                    <Link className="dropdown-item" to="/congelados">Congelados </Link>
-                    
-
+                    <Link className="dropdown-item" to="/dulces">
+                      Dulces{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/frutas">
+                      Frutas{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/lacteos">
+                      Lácteos{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/carnes">
+                      Carnes{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/bebestibles">
+                      Bebidas{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/congelados">
+                      Congelados{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/pescados">
+                      Pescados{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/panaderia">
+                      Panadería{" "}
+                    </Link>
+                    <Link className="dropdown-item" to="/aseo">
+                      Aseo{" "}
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -194,6 +248,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
+
       <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg">
           <div className="modal-content border-0 shadow-lg rounded-4">
@@ -208,7 +263,10 @@ const Navbar = () => {
               ></button>
             </div>
 
-            <div className="modal-body" style={{ maxHeight: "400px", overflowY: "auto" }}>
+            <div
+              className="modal-body"
+              style={{ maxHeight: "400px", overflowY: "auto" }}
+            >
               {renderCartItems()}
             </div>
 
@@ -220,7 +278,10 @@ const Navbar = () => {
                 </span>
               </span>
               <div>
-                <button className="btn btn-secondary me-2" data-bs-dismiss="modal">
+                <button
+                  className="btn btn-secondary me-2"
+                  data-bs-dismiss="modal"
+                >
                   Cerrar
                 </button>
                 <button className="btn btn-success" onClick={handleGoToCheckout}>

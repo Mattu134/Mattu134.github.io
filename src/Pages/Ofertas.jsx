@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import ProductCard from "../components/ProductCard";
-import { fetchProducts } from "../services/productServices";
+// src/Pages/Ofertas.jsx
+import React, { useEffect, useState } from 'react';
+import ProductCard from '../components/ProductCard';
+import { fetchProducts } from '../services/productServices';
 
 const Ofertas = () => {
   const [products, setProducts] = useState([]);
@@ -8,9 +9,15 @@ const Ofertas = () => {
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchProducts({ offers: true });
-      setProducts(data);
-      setLoading(false);
+      setLoading(true);
+      try {
+        const data = await fetchProducts({ offers: true });
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener ofertas:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
@@ -29,7 +36,7 @@ const Ofertas = () => {
           <p className="text-center">Cargando ofertas...</p>
         ) : (
           <div className="row g-4 product-grid justify-content-center">
-            {products.map((p) => (
+            {products.map(p => (
               <ProductCard key={p.id} product={p} />
             ))}
 

@@ -6,6 +6,8 @@ const ProductCard = memo(({ product }) => {
   const { id, name, price, originalPrice, image } = product;
   const isOffer = price < originalPrice;
 
+  const isExternalImage = image.startsWith("http");
+  const imageSrc = isExternalImage ? image : `/images/${image}`;
 
   const handleAddToCart = () => {
     addToCart(name, price, id, image);
@@ -25,7 +27,7 @@ const ProductCard = memo(({ product }) => {
           }}
         >
           <img
-            src={`/images/${image}`}
+            src={imageSrc}
             alt={name}
             loading="lazy"
             style={{
@@ -36,6 +38,7 @@ const ProductCard = memo(({ product }) => {
               backgroundColor: "white",
             }}
           />
+
           {isOffer && (
             <span className="badge bg-danger position-absolute top-0 start-0 m-2 px-3 py-2">
               OFERTA

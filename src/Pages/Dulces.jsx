@@ -1,3 +1,4 @@
+// src/Pages/Dulces.jsx
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
@@ -12,7 +13,6 @@ const Dulces = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Carga los productos de la categoría "Dulces"
         const data = await fetchProducts({ category: 'Dulces' });
         setProducts(data);
       } catch (error) {

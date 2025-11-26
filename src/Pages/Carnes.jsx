@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import ProductCard from "../components/ProductCard";
-import { useCart } from "../context/CartContext";
-import { fetchProducts } from "../services/productServices";
+// src/Pages/Carnes.jsx
+import React, { useState, useEffect } from 'react';
+import ProductCard from '../components/ProductCard';
+import { useCart } from '../context/CartContext';
+import { fetchProducts } from '../services/productServices';
 
 const Carnes = () => {
   const [products, setProducts] = useState([]);
@@ -11,14 +12,19 @@ const Carnes = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      const data = await fetchProducts({ category: "Carnes" });
-      setProducts(data);
-      setLoading(false);
+      try {
+        const data = await fetchProducts({ category: 'Carnes' });
+        setProducts(data);
+      } catch (error) {
+        console.error('Error al obtener carnes:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, []);
 
-  const filteredProducts = products.filter((p) =>
+  const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -30,15 +36,15 @@ const Carnes = () => {
 
       <div className="container my-5">
         {loading ? (
-          <p className="text-center">Cargando productos...</p>
+          <p className="text-center">Cargando carnes...</p>
         ) : (
           <div className="row g-4 product-grid justify-content-center">
-            {filteredProducts.map((p) => (
+            {filteredProducts.map(p => (
               <ProductCard key={p.id} product={p} />
             ))}
             {filteredProducts.length === 0 && (
               <p className="text-center text-muted col-12">
-                No se encontraron resultados para "{searchTerm}"
+                No se encontraron carnes con el término "{searchTerm}".
               </p>
             )}
           </div>
