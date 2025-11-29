@@ -1,58 +1,54 @@
-import React, { useState, useEffect } from 'react';
-import { fetchProducts } from '../services/productServices';
-import Hero from '../components/Hero';
-import Contact from '../components/Contact';
-import ProductCard from '../components/ProductCard';
-import { useCart } from '../context/CartContext';
+import React from "react";
+import Hero from "../components/Hero";
+import Contact from "../components/Contact";
+import ProductCard from "../components/ProductCard";
+
+import { useProducts } from "../context/ProductContext";
+import { useCart } from "../context/CartContext";
 
 const Home = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loading, error } = useProducts();
   const { searchTerm } = useCart();
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchProducts({ offers: true });
-        setProducts(data);
-      } catch (error) {
-        console.error('Error al obtener ofertas:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const normalizedSearch = (searchTerm || "").trim().toLowerCase();
+  const featuredProducts = products.slice(0, 8);
+  const filteredProducts = featuredProducts.filter((product) => {
+    const name = (product.nombre || product.name || "").toLowerCase();
+    return !normalizedSearch || name.includes(normalizedSearch);
+  });
 
   return (
     <>
       <Hero />
+      <section id="destacados" className="container my-5">
+        <h2 className="text-center fw-bold text-success mb-4">
+          Productos destacados
+        </h2>
 
-      <section id="ofertas" className="container my-5">
-        <h2 className="text-center fw-bold text-success mb-4">Ofertas destacadas</h2>
+        {loading && <p className="text-center">Cargando productos...</p>}
 
-        {loading && <p className="text-center">Cargando ofertas...</p>}
+        {error && !loading && (
+          <p className="text-center text-danger">
+            Ocurrió un error al cargar los productos: {error}
+          </p>
+        )}
 
-        {!loading && (
-          <div id="product-list" className="row g-4 justify-content-center product-grid">
-            {filteredProducts.map(product => (
+        {!loading && !error && (
+          <div
+            id="product-list"
+            className="row g-4 justify-content-center product-grid"
+          >
+            {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
+
             {filteredProducts.length === 0 && (
               <p className="text-center text-muted col-12">
-                No se encontraron productos en ofertas con el término "{searchTerm}".
+                No hay productos destacados que coincidan con "{searchTerm}".
               </p>
             )}
           </div>
         )}
       </section>
-
       <Contact />
     </>
   );

@@ -3,21 +3,34 @@ import { useCart } from "../context/CartContext";
 
 const ProductCard = memo(({ product }) => {
   const { addToCart } = useCart();
-  const { id, name, price, originalPrice, image } = product;
-  const isOffer = price < originalPrice;
 
-  const isExternalImage = image.startsWith("http");
-  const imageSrc = isExternalImage ? image : `/images/${image}`;
+  const prodName = product.nombre || product.name;
+  const prodImage = product.imagen_url || product.imagenUrl || product.image;
+  const prodPrice = product.precio ?? product.price;
+  const prodOriginal = product.precio_original ?? product.originalPrice;
+
+  const isOffer = prodOriginal && prodPrice < prodOriginal;
+  const fallbackImage =
+    "https://via.placeholder.com/400x260?text=EcoMarket";
+
+  const rawImage =
+    prodImage && String(prodImage).trim() !== "" ? prodImage : fallbackImage;
+
+  const isExternalImage = rawImage.startsWith("http");
+  const imageSrc = isExternalImage ? rawImage : `/images/${rawImage}`;
 
   const handleAddToCart = () => {
-    addToCart(name, price, id, image);
+    addToCart(prodName, prodPrice, product.id, prodImage ?? fallbackImage);
   };
 
   return (
     <div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 product-card">
       <div
-        className="card h-100 border-0 shadow-sm hover-shadow transition-all"
-        style={{ borderRadius: "1rem", overflow: "hidden" }}
+        className="card product-card-item h-100 border-0 shadow-sm transition-all"
+        style={{
+          borderRadius: "1rem",
+          overflow: "hidden",
+        }}
       >
         <div
           className="position-relative d-flex align-items-center justify-content-center bg-white"
@@ -28,7 +41,7 @@ const ProductCard = memo(({ product }) => {
         >
           <img
             src={imageSrc}
-            alt={name}
+            alt={prodName}
             loading="lazy"
             style={{
               maxHeight: "100%",
@@ -50,14 +63,14 @@ const ProductCard = memo(({ product }) => {
           <div>
             <h5
               className="card-title fw-semibold mb-2 text-truncate"
-              title={name}
+              title={prodName}
             >
-              {name}
+              {prodName}
             </h5>
 
             {isOffer && (
               <p className="text-muted text-decoration-line-through mb-1 small">
-                ${originalPrice.toLocaleString("es-CL")}
+                ${prodOriginal.toLocaleString("es-CL")}
               </p>
             )}
 
@@ -66,7 +79,7 @@ const ProductCard = memo(({ product }) => {
                 isOffer ? "text-success" : "text-dark"
               }`}
             >
-              ${price.toLocaleString("es-CL")}
+              ${prodPrice.toLocaleString("es-CL")}
             </p>
           </div>
 
