@@ -9,8 +9,8 @@ const Congelados = () => {
 
   const congeladosProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "congelados" ||
-      p.categoria?.toLowerCase() === "congelados"
+      p.category?.toLowerCase() === "congelados" && p.activo||
+      p.categoria?.toLowerCase() === "congelados"&& p.activo
   );
 
   const filteredProducts = congeladosProducts.filter((product) =>

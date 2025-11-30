@@ -4,8 +4,9 @@ import { useProducts } from "../../context/ProductContext";
 
 const Ofertas = () => {
   const { products = [], loading, error } = useProducts();
-
-  const ofertasProducts = products.slice(0, 5); // Tomar los primeros 5 productos como ofertas
+  const ofertasProducts = products
+    .filter((p) => p.activo) 
+    .slice(0, 5);            // Tomar los primeros 5 como ofertas
 
   return (
     <>
@@ -28,7 +29,7 @@ const Ofertas = () => {
         {!loading && !error && (
           <div className="row g-4 product-grid justify-content-center">
             {ofertasProducts.map((p) => (
-              <ProductCard key={p.id || p._id} product={p} />
+              <ProductCard key={p.id} product={p} />
             ))}
 
             {ofertasProducts.length === 0 && (

@@ -1,17 +1,19 @@
-import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
-    // Si no está autenticado, redirige al login
     return <Navigate to="/login" replace />;
   }
 
-  // Si está autenticado, renderiza el componente hijo de la ruta
-  return <Outlet />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

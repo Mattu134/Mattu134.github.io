@@ -1,7 +1,24 @@
+import React, { useMemo } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useProducts } from "../context/ProductContext";
 import SearchBar from "./SearchBar";
 import * as bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+const CATEGORY_ROUTE_MAP = {
+  Frutas: "/frutas",
+  Dulces: "/dulces",
+  Lácteos: "/lacteos",
+  Lacteos: "/lacteos",
+  Carnes: "/carnes",
+  Bebidas: "/bebestibles",
+  Bebestibles: "/bebestibles",
+  Congelados: "/congelados",
+  Pescados: "/pescados",
+  Panadería: "/panaderia",
+  Panaderia: "/panaderia",
+  Aseo: "/aseo",
+};
 
 const Navbar = () => {
   const {
@@ -12,7 +29,19 @@ const Navbar = () => {
     increaseQuantity,
     decreaseQuantity,
   } = useCart();
+
+  const { user, isAuthenticated, role, logout } = useAuth();
+  const { products = [] } = useProducts();
   const navigate = useNavigate();
+  const dynamicCategories = useMemo(() => {
+    const set = new Set();
+    products.forEach((p) => {
+      if (p.categoria) {
+        set.add(p.categoria);
+      }
+    });
+    return Array.from(set).sort();
+  }, [products]);
 
   const handleGoToCheckout = () => {
     const cartModalElement = document.getElementById("cartModal");
@@ -23,6 +52,11 @@ const Navbar = () => {
       modalInstance.hide();
     }
     navigate("/checkout");
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
   };
 
   const renderCartItems = () => {
@@ -70,8 +104,6 @@ const Navbar = () => {
                   <small className="text-muted d-block mb-1">
                     ${item.price.toLocaleString("es-CL")} c/u
                   </small>
-
-                  {/* Controles de cantidad */}
                   <div className="btn-group btn-group-sm" role="group">
                     <button
                       type="button"
@@ -185,6 +217,7 @@ const Navbar = () => {
                 </NavLink>
               </li>
 
+              {/*categorías */}
               <li className="nav-item dropdown">
                 <a
                   className="nav-link fw-semibold text-success dropdown-toggle"
@@ -195,67 +228,108 @@ const Navbar = () => {
                   <i className="bi bi-list"></i> Categorías
                 </a>
                 <ul className="dropdown-menu">
-                  <li>
-                    <Link className="dropdown-item" to="/dulces">
-                      Dulces{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/frutas">
-                      Frutas{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/lacteos">
-                      Lácteos{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/carnes">
-                      Carnes{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/bebestibles">
-                      Bebidas{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/congelados">
-                      Congelados{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/pescados">
-                      Pescados{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/panaderia">
-                      Panadería{" "}
-                    </Link>
-                    <Link className="dropdown-item" to="/aseo">
-                      Aseo{" "}
-                    </Link>
-                  </li>
+                  {dynamicCategories.length === 0 && (
+                    <li>
+                      <span className="dropdown-item text-muted">
+                        Sin categorías
+                      </span>
+                    </li>
+                  )}
+
+                  {dynamicCategories.map((cat) => {
+                    const route = CATEGORY_ROUTE_MAP[cat];
+                    return (
+                      <li key={cat}>
+                        {route ? (
+                          <Link className="dropdown-item" to={route}>
+                            {cat}
+                          </Link>
+                        ) : (
+                          <span className="dropdown-item disabled">
+                            {cat} (sin vista)
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </li>
             </ul>
+                <div className="d-flex align-items-center gap-3 ms-lg-4 mt-3 mt-lg-0">
+                  <div className="d-flex align-items-center">
+                    <SearchBar />
+                  </div>
+                  {!isAuthenticated ? (
+                    <button
+                      type="button"
+                      className="btn btn-outline-success d-flex align-items-center"
+                      onClick={() => navigate("/login")}
+                      style={{ height: "44px" }}
+                    >
+                      <i className="bi bi-person-circle me-1"></i> Iniciar sesión
+                    </button>
+                  ) : (
+                    <div className="dropdown">
+                      <button
+                        className="btn btn-outline-success dropdown-toggle d-flex align-items-center"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        style={{ height: "44px" }}
+                      >
+                        <i className="bi bi-person-circle me-1"></i>
+                        {user?.name ? user.name.split(" ")[0] : "Mi cuenta"}
+                      </button>
+                      <ul className="dropdown-menu dropdown-menu-end">
+                        {(role === "Administrador" || role === "Vendedor") && (
+                          <li>
+                            <button className="dropdown-item" onClick={() => navigate("/admin")}>
+                              <i className="bi bi-speedometer2 me-2"></i> Panel de gestión
+                            </button>
+                          </li>
+                        )}
+                        <li>
+                          <button className="dropdown-item" onClick={() => navigate("/")}>
+                            <i className="bi bi-shop me-2"></i> Ir a la tienda
+                          </button>
+                        </li>
+                        <li><hr className="dropdown-divider" /></li>
+                        <li>
+                          <button className="dropdown-item text-danger" onClick={logout}>
+                            <i className="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+        <button
+          className="btn btn-success position-relative d-flex align-items-center justify-content-center"
+          style={{ width: "44px", height: "44px" }}
+          data-bs-toggle="modal"
+          data-bs-target="#cartModal"
+        >
+          <i className="bi bi-cart3 fs-5"></i>
 
-            <div className="d-flex align-items-center ms-4">
-              <SearchBar />
-              <Link to="/admin" className="btn btn-outline-success me-3">
-                <i className="bi bi-person-circle"></i>
-              </Link>
+          {totalItems > 0 && (
+            <span
+              className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              style={{ fontSize: "0.70rem" }}
+            >
+              {totalItems}
+            </span>
+          )}
+        </button>
+      </div>
 
-              <button
-                className="btn btn-success position-relative"
-                data-bs-toggle="modal"
-                data-bs-target="#cartModal"
-              >
-                <i className="bi bi-cart3 fs-5"></i>
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {totalItems}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content border-0 shadow-lg rounded-4">
-            <div className="modal-header bg-success text-white rounded-top-4">
-              <h5 className="modal-title">
-                <i className="bi bi-cart4 me-2"></i> Tu carrito
-              </h5>
+                </div>
+              </div>
+            </nav>
+            <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered modal-lg">
+                <div className="modal-content border-0 shadow-lg rounded-4">
+                  <div className="modal-header bg-success text-white rounded-top-4">
+                    <h5 className="modal-title">
+                      <i className="bi bi-cart4 me-2"></i> Tu carrito
+                    </h5>
               <button
                 type="button"
                 className="btn-close btn-close-white"

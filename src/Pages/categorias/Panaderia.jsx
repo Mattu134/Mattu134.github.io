@@ -9,9 +9,9 @@ const Panaderia = () => {
 
   const panaderiaProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "panaderia" ||
-      p.categoria?.toLowerCase() === "panadería" || 
-      p.categoria?.toLowerCase() === "panaderia"
+      p.category?.toLowerCase() === "panaderia" && p.activo||
+      p.categoria?.toLowerCase() === "panadería" && p.activo|| 
+      p.categoria?.toLowerCase() === "panaderia"&& p.activo
   );
 
   const filteredProducts = panaderiaProducts.filter((product) =>

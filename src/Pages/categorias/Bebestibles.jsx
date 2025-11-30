@@ -9,8 +9,8 @@ const Bebestibles = () => {
 
   const bebestiblesProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "bebestibles" ||
-      p.categoria?.toLowerCase() === "bebestibles"
+      p.category?.toLowerCase() === "bebestibles" && p.activo ||
+      p.categoria?.toLowerCase() === "bebestibles"&& p.activo
   );
 
   const filteredProducts = bebestiblesProducts.filter((product) =>

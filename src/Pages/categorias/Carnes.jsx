@@ -8,8 +8,8 @@ const Carnes = () => {
   const { products = [], loading, error } = useProducts();
   const carnesProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "carnes" ||
-      p.categoria?.toLowerCase() === "carnes"
+      p.category?.toLowerCase() === "carnes" && p.activo||
+      p.categoria?.toLowerCase() === "carnes"&& p.activo
   );
 
   const filteredProducts = carnesProducts.filter((p) =>

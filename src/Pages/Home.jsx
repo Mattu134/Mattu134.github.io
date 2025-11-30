@@ -10,7 +10,9 @@ const Home = () => {
   const { products, loading, error } = useProducts();
   const { searchTerm } = useCart();
   const normalizedSearch = (searchTerm || "").trim().toLowerCase();
-  const featuredProducts = products.slice(0, 8);
+  const activeProducts = products.filter((p) => p.activo);
+  // Destacados: primeros 8 activos
+  const featuredProducts = activeProducts.slice(0, 8);
   const filteredProducts = featuredProducts.filter((product) => {
     const name = (product.nombre || product.name || "").toLowerCase();
     return !normalizedSearch || name.includes(normalizedSearch);
@@ -19,6 +21,7 @@ const Home = () => {
   return (
     <>
       <Hero />
+
       <section id="destacados" className="container my-5">
         <h2 className="text-center fw-bold text-success mb-4">
           Productos destacados
@@ -49,6 +52,7 @@ const Home = () => {
           </div>
         )}
       </section>
+
       <Contact />
     </>
   );

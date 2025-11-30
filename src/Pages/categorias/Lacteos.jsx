@@ -9,7 +9,7 @@ const Lacteos = () => {
 
   const lacteosProducts = products.filter(
     (product) =>
-      product.categoria === "Lacteos" || product.category === "Lacteos"
+      product.categoria === "Lacteos" && p.activo|| product.category === "Lacteos"&& p.activo
   );
 
   const filteredProducts = lacteosProducts.filter((product) =>

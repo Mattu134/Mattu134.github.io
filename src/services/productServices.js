@@ -3,8 +3,6 @@ import { API_BASE_URL } from "./apiConfig";
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
-
-/** (READ) Obtiene todos los productos desde la API, con opciones de filtrado.*/
 export const fetchProducts = async (params = {}) => {
   try {
     const response = await api.get("/products");
@@ -28,7 +26,7 @@ export const fetchProducts = async (params = {}) => {
   }
 };
 
-/** (READ) Obtiene un producto por ID desde la API.*/
+/**Obtiene un producto por ID desde la API.*/
 export const fetchProductById = async (productId) => {
   try {
     const response = await api.get(`/products/${productId}`);
@@ -39,7 +37,7 @@ export const fetchProductById = async (productId) => {
   }
 };
 
-/** (CREATE) Crea un nuevo producto en la API.*/
+/**Crea un nuevo producto en la API.*/
 export const createProduct = async (productData) => {
   try {
     const response = await api.post("/products", productData);
@@ -50,7 +48,7 @@ export const createProduct = async (productData) => {
   }
 };
 
-/** (UPDATE) Actualiza un producto en la API.*/
+/**Actualiza un producto en la API.*/
 export const updateProduct = async (updatedProduct) => {
   try {
     if (!updatedProduct.id) {
@@ -68,7 +66,7 @@ export const updateProduct = async (updatedProduct) => {
   }
 };
 
-/** (DELETE) Elimina un producto en la API. */
+/**Elimina un producto en la API. */
 export const deleteProduct = async (productId) => {
   try {
     await api.delete(`/products/${productId}`);

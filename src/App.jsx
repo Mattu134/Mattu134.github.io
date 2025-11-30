@@ -1,6 +1,6 @@
-// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -28,6 +28,8 @@ import Bebestibles from "./Pages/categorias/Bebestibles";
 import Ofertas from "./Pages/categorias/Ofertas";
 import Lacteos from "./Pages/categorias/Lacteos";
 import Congelados from "./Pages/categorias/Congelados";
+import Busqueda from "./Pages/Busqueda";
+import Ventas from "./Pages/Ventas";
 
 const MainLayout = ({ children }) => (
   <div id="app-container" className="d-flex flex-column min-vh-100">
@@ -47,35 +49,66 @@ const AdminLayout = ({ children }) => (
 function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-          <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
-          <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
-          <Route path="/carnes" element={<MainLayout><Carnes /></MainLayout>} />
-          <Route path="/pescados" element={<MainLayout><Pescados /></MainLayout>} />
-          <Route path="/panaderia" element={<MainLayout><Panaderia /></MainLayout>} />
-          <Route path="/aseo" element={<MainLayout><Aseo /></MainLayout>} />
-          <Route path="/bebestibles" element={<MainLayout><Bebestibles /></MainLayout>} />
-          <Route path="/lacteos" element={<MainLayout><Lacteos /></MainLayout>} />
-          <Route path="/congelados" element={<MainLayout><Congelados /></MainLayout>} />
-          <Route path="/ofertas" element={<MainLayout><Ofertas /></MainLayout>} />
-          <Route path="/quienes-somos" element={<MainLayout><SobreNosotros /></MainLayout>} />
-          <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
-          <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} />
-          <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
-          <Route path="/contacto" element={<MainLayout><Contacto /></MainLayout>} />
+      <AuthProvider>
+        <CartProvider>
+          <Routes>
 
-          <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/admin" element={<AdminLayout><AdminPanel /></AdminLayout>} />
-            <Route path="/admin/productos" element={<AdminLayout><ProductsList /></AdminLayout>} />
-            <Route path="/admin/usuarios" element={<AdminLayout><UserList /></AdminLayout>} />
-            <Route path="/admin/ventas" element={<AdminLayout><AdminPanel /></AdminLayout>} />
-            <Route path="/admin/pedidos" element={<AdminLayout><AdminPanel /></AdminLayout>} />
-          </Route>
-        </Routes>
-      </CartProvider>
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
+            <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
+            <Route path="/carnes" element={<MainLayout><Carnes /></MainLayout>} />
+            <Route path="/pescados" element={<MainLayout><Pescados /></MainLayout>} />
+            <Route path="/panaderia" element={<MainLayout><Panaderia /></MainLayout>} />
+            <Route path="/aseo" element={<MainLayout><Aseo /></MainLayout>} />
+            <Route path="/bebestibles" element={<MainLayout><Bebestibles /></MainLayout>} />
+            <Route path="/lacteos" element={<MainLayout><Lacteos /></MainLayout>} />
+            <Route path="/congelados" element={<MainLayout><Congelados /></MainLayout>} />
+            <Route path="/ofertas" element={<MainLayout><Ofertas /></MainLayout>} />
+            <Route path="/quienes-somos" element={<MainLayout><SobreNosotros /></MainLayout>} />
+            <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
+            <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} />
+            <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
+            <Route path="/contacto" element={<MainLayout><Contacto /></MainLayout>} />
+            <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
+            <Route path="/buscar" element={<MainLayout><Busqueda /></MainLayout>} />
+
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["Administrador", "Vendedor"]}>
+                  <AdminLayout><AdminPanel /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/productos"
+              element={
+                <ProtectedRoute allowedRoles={["Administrador", "Vendedor"]}>
+                  <AdminLayout><ProductsList /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/ventas"
+              element={
+                <ProtectedRoute allowedRoles={["Administrador"]}>
+                  <AdminLayout><Ventas /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/usuarios"
+              element={
+                <ProtectedRoute allowedRoles={["Administrador"]}>
+                  <AdminLayout><UserList /></AdminLayout>
+                </ProtectedRoute>
+              }
+            />
+
+          </Routes>
+        </CartProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

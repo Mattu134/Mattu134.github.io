@@ -9,8 +9,8 @@ const Dulces = () => {
 
   const dulcesProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "dulces" ||
-      p.categoria?.toLowerCase() === "dulces"
+      p.category?.toLowerCase() === "dulces" && p.activo||
+      p.categoria?.toLowerCase() === "dulces"&& p.activo
   );
 
   const filteredProducts = dulcesProducts.filter((product) =>

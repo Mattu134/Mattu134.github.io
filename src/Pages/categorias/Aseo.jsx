@@ -9,8 +9,8 @@ const Aseo = () => {
 
   const aseoProducts = products.filter(
     (p) =>
-      p.category?.toLowerCase() === "aseo" ||
-      p.categoria?.toLowerCase() === "aseo"
+      p.category?.toLowerCase() === "aseo" && p.activo ||
+      p.categoria?.toLowerCase() === "aseo" && p.activo
   );
 
   const filteredProducts = aseoProducts.filter((product) =>
