@@ -173,7 +173,7 @@ function ProductsList() {
       };
 
       if (editingProduct) {
-        await updateProduct(editingProduct.id, payload);
+        await updateProduct({ ...payload, id: editingProduct.id});
         setFeedback({
           message: "Producto actualizado correctamente.",
           type: "success",
