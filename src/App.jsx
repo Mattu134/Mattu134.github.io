@@ -30,6 +30,9 @@ import Lacteos from "./Pages/categorias/Lacteos";
 import Congelados from "./Pages/categorias/Congelados";
 import Busqueda from "./Pages/Busqueda";
 import Ventas from "./Pages/Ventas";
+import RegistroPage from "./Pages/RegistroPage";
+import ProductoDetalle from "./Pages/ProductoDetalle";
+
 
 const MainLayout = ({ children }) => (
   <div id="app-container" className="d-flex flex-column min-vh-100">
@@ -52,7 +55,6 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
-
             <Route path="/" element={<MainLayout><Home /></MainLayout>} />
             <Route path="/frutas" element={<MainLayout><Frutas /></MainLayout>} />
             <Route path="/dulces" element={<MainLayout><Dulces /></MainLayout>} />
@@ -69,8 +71,11 @@ function App() {
             <Route path="/blog" element={<MainLayout><Blog /></MainLayout>} />
             <Route path="/blog/:id" element={<MainLayout><BlogPostDetail /></MainLayout>} />
             <Route path="/contacto" element={<MainLayout><Contacto /></MainLayout>} />
-            <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
             <Route path="/buscar" element={<MainLayout><Busqueda /></MainLayout>} />
+            <Route path="/producto/:id" element={<MainLayout><ProductoDetalle /></MainLayout>} />
+
+            <Route path="/login" element={<AdminLayout><Login /></AdminLayout>} />
+            <Route path="/registro" element={<AdminLayout><RegistroPage /></AdminLayout>} />
 
             <Route
               path="/admin"
@@ -96,7 +101,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
               path="/admin/usuarios"
               element={
@@ -105,7 +109,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
           </Routes>
         </CartProvider>
       </AuthProvider>

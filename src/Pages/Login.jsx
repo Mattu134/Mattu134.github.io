@@ -1,3 +1,4 @@
+// src/Pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -6,23 +7,41 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
-    const user = login(username, password);
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
 
-    if (!user) {
-      setError("Usuario, contraseña o estado de la cuenta incorrectos.");
+    if (!trimmedUsername || !trimmedPassword) {
+      setError("Debes ingresar usuario y contraseña.");
+      setIsSubmitting(false);
       return;
     }
+
+    const user = await login(trimmedUsername, trimmedPassword);
+
+    setIsSubmitting(false);
+
+    if (!user) {
+      setError("Usuario o contraseña incorrectos.");
+      return;
+    }
+
+    if (user.active === false) {
+      setError("Tu cuenta se encuentra inactiva. Contacta con un administrador.");
+      return;
+    }
+
     if (user.role === "Administrador" || user.role === "Vendedor") {
       navigate("/admin");
-    } else if (user.role === "Cliente") {
-      navigate("/");
     } else {
       navigate("/");
     }
@@ -57,6 +76,7 @@ function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
             />
           </div>
 
@@ -72,6 +92,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -81,16 +102,34 @@ function Login() {
             </div>
           )}
 
-          <button type="submit" className="btn btn-success btn-lg w-100 mt-3">
-            Ingresar
+          <button
+            type="submit"
+            className="btn btn-success btn-lg w-100 mt-3"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Ingresando..." : "Ingresar"}
           </button>
+
           <button
             type="button"
             className="btn btn-outline-secondary w-100 mt-2"
             onClick={() => navigate("/")}
+            disabled={isSubmitting}
           >
             Volver a la tienda
           </button>
+
+          <p className="mt-3 text-center text-muted">
+            ¿No tienes cuenta?{" "}
+            <button
+              type="button"
+              className="btn btn-link p-0 align-baseline"
+              onClick={() => navigate("/registro")}
+              disabled={isSubmitting}
+            >
+              Regístrate
+            </button>
+          </p>
         </form>
       </div>
     </div>

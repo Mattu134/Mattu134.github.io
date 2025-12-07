@@ -1,9 +1,12 @@
 import { memo } from "react";
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = memo(({ product }) => {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
+  const prodId = product.id ?? product._id;
   const prodName = product.nombre || product.name;
   const prodImage = product.imagen_url || product.imagenUrl || product.image;
   const prodPrice = product.precio ?? product.price;
@@ -15,12 +18,17 @@ const ProductCard = memo(({ product }) => {
 
   const rawImage =
     prodImage && String(prodImage).trim() !== "" ? prodImage : fallbackImage;
-
   const isExternalImage = rawImage.startsWith("http");
   const imageSrc = isExternalImage ? rawImage : `/images/${rawImage}`;
 
-  const handleAddToCart = () => {
-    addToCart(prodName, prodPrice, product.id, prodImage ?? fallbackImage);
+  const handleCardClick = () => {
+    if (!prodId) return; 
+    navigate(`/producto/${prodId}`);
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
+    addToCart(prodName, prodPrice, prodId, rawImage);
   };
 
   return (
@@ -30,7 +38,9 @@ const ProductCard = memo(({ product }) => {
         style={{
           borderRadius: "1rem",
           overflow: "hidden",
+          cursor: prodId ? "pointer" : "default",
         }}
+        onClick={handleCardClick}
       >
         <div
           className="position-relative d-flex align-items-center justify-content-center bg-white"

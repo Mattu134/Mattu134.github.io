@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useProducts } from "../context/ProductContext";
 import SearchBar from "./SearchBar";
 import * as bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 const CATEGORY_ROUTE_MAP = {
   Frutas: "/frutas",
   Dulces: "/dulces",
@@ -33,6 +34,7 @@ const Navbar = () => {
   const { user, isAuthenticated, role, logout } = useAuth();
   const { products = [] } = useProducts();
   const navigate = useNavigate();
+
   const dynamicCategories = useMemo(() => {
     const set = new Set();
     products.forEach((p) => {
@@ -217,7 +219,6 @@ const Navbar = () => {
                 </NavLink>
               </li>
 
-              {/*categorías */}
               <li className="nav-item dropdown">
                 <a
                   className="nav-link fw-semibold text-success dropdown-toggle"
@@ -255,81 +256,97 @@ const Navbar = () => {
                 </ul>
               </li>
             </ul>
-                <div className="d-flex align-items-center gap-3 ms-lg-4 mt-3 mt-lg-0">
-                  <div className="d-flex align-items-center">
-                    <SearchBar />
-                  </div>
-                  {!isAuthenticated ? (
-                    <button
-                      type="button"
-                      className="btn btn-outline-success d-flex align-items-center"
-                      onClick={() => navigate("/login")}
-                      style={{ height: "44px" }}
-                    >
-                      <i className="bi bi-person-circle me-1"></i> Iniciar sesión
-                    </button>
-                  ) : (
-                    <div className="dropdown">
-                      <button
-                        className="btn btn-outline-success dropdown-toggle d-flex align-items-center"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        style={{ height: "44px" }}
-                      >
-                        <i className="bi bi-person-circle me-1"></i>
-                        {user?.name ? user.name.split(" ")[0] : "Mi cuenta"}
-                      </button>
-                      <ul className="dropdown-menu dropdown-menu-end">
-                        {(role === "Administrador" || role === "Vendedor") && (
-                          <li>
-                            <button className="dropdown-item" onClick={() => navigate("/admin")}>
-                              <i className="bi bi-speedometer2 me-2"></i> Panel de gestión
-                            </button>
-                          </li>
-                        )}
-                        <li>
-                          <button className="dropdown-item" onClick={() => navigate("/")}>
-                            <i className="bi bi-shop me-2"></i> Ir a la tienda
-                          </button>
-                        </li>
-                        <li><hr className="dropdown-divider" /></li>
-                        <li>
-                          <button className="dropdown-item text-danger" onClick={logout}>
-                            <i className="bi bi-box-arrow-right me-2"></i> Cerrar sesión
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-        <button
-          className="btn btn-success position-relative d-flex align-items-center justify-content-center"
-          style={{ width: "44px", height: "44px" }}
-          data-bs-toggle="modal"
-          data-bs-target="#cartModal"
-        >
-          <i className="bi bi-cart3 fs-5"></i>
 
-          {totalItems > 0 && (
-            <span
-              className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              style={{ fontSize: "0.70rem" }}
-            >
-              {totalItems}
-            </span>
-          )}
-        </button>
-      </div>
-
-                </div>
+            <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0 ms-lg-auto">
+              <div className="d-flex align-items-center">
+                <SearchBar />
               </div>
-            </nav>
-            <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content border-0 shadow-lg rounded-4">
-                  <div className="modal-header bg-success text-white rounded-top-4">
-                    <h5 className="modal-title">
-                      <i className="bi bi-cart4 me-2"></i> Tu carrito
-                    </h5>
+
+              {!isAuthenticated ? (
+                <button
+                  type="button"
+                  className="btn btn-outline-success d-flex align-items-center"
+                  onClick={() => navigate("/login")}
+                  style={{ height: "44px" }}
+                >
+                  <i className="bi bi-person-circle me-1"></i> Iniciar sesión
+                </button>
+              ) : (
+                <div className="dropdown">
+                  <button
+                    className="btn btn-outline-success dropdown-toggle d-flex align-items-center"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    style={{ height: "44px" }}
+                  >
+                    <i className="bi bi-person-circle me-1"></i>
+                    {user?.name ? user.name.split(" ")[0] : "Mi cuenta"}
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    {(role === "Administrador" || role === "Vendedor") && (
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => navigate("/admin")}
+                        >
+                          <i className="bi bi-speedometer2 me-2"></i> Panel de
+                          gestión
+                        </button>
+                      </li>
+                    )}
+                    <li>
+                      <button
+                        className="dropdown-item"
+                        onClick={() => navigate("/")}
+                      >
+                        <i className="bi bi-shop me-2"></i> Ir a la tienda
+                      </button>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={logout}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i> Cerrar
+                        sesión
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
+              <button
+                className="btn btn-success position-relative d-flex align-items-center justify-content-center"
+                style={{ width: "44px", height: "44px" }}
+                data-bs-toggle="modal"
+                data-bs-target="#cartModal"
+              >
+                <i className="bi bi-cart3 fs-5"></i>
+
+                {totalItems > 0 && (
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: "0.70rem" }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="modal fade" id="cartModal" tabIndex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg">
+          <div className="modal-content border-0 shadow-lg rounded-4">
+            <div className="modal-header bg-success text-white rounded-top-4">
+              <h5 className="modal-title">
+                <i className="bi bi-cart4 me-2"></i> Tu carrito
+              </h5>
               <button
                 type="button"
                 className="btn-close btn-close-white"
@@ -358,8 +375,13 @@ const Navbar = () => {
                 >
                   Cerrar
                 </button>
-                <button className="btn btn-success" onClick={handleGoToCheckout}>
-                  Ir al pago <i className="bi bi-arrow-right-circle ms-1"></i>
+                <button
+                  className="btn btn-success"
+                  onClick={handleGoToCheckout}
+                  disabled={cart.length === 0}
+                >
+                  Ir al pago{" "}
+                  <i className="bi bi-arrow-right-circle ms-1"></i>
                 </button>
               </div>
             </div>

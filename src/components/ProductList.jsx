@@ -7,6 +7,7 @@ import {
   deleteProduct,
 } from "../services/productServices";
 import { useProducts } from "../context/ProductContext";
+import { API_BASE_URL } from "../services/apiConfig";
 
 const CATEGORY_BASE_OPTIONS = [
   "Frutas",
@@ -37,6 +38,7 @@ const initialState = {
   loteFechaVencimiento: "",
   iva: 19,
 };
+
 const STOCK_CRITICO_UMBRAL = 5;
 const DIAS_POR_VENCER = 7;
 
@@ -46,7 +48,11 @@ function esStockCritico(stock) {
 
 function obtenerEstadoLote(producto) {
   if (!producto.loteFechaVencimiento) {
-    return { tipo: "sin_lote", etiqueta: "Sin fecha", badgeClass: "bg-secondary-subtle text-secondary" };
+    return {
+      tipo: "sin_lote",
+      etiqueta: "Sin fecha",
+      badgeClass: "bg-secondary-subtle text-secondary",
+    };
   }
 
   const hoy = new Date();
@@ -55,17 +61,29 @@ function obtenerEstadoLote(producto) {
   hoy.setHours(0, 0, 0, 0);
 
   if (venc < hoy) {
-    return { tipo: "vencido", etiqueta: "Vencido", badgeClass: "bg-danger-subtle text-danger" };
+    return {
+      tipo: "vencido",
+      etiqueta: "Vencido",
+      badgeClass: "bg-danger-subtle text-danger",
+    };
   }
 
   const diffMs = venc.getTime() - hoy.getTime();
   const diffDias = diffMs / (1000 * 60 * 60 * 24);
 
   if (diffDias <= DIAS_POR_VENCER) {
-    return { tipo: "por_vencer", etiqueta: "Por vencer", badgeClass: "bg-warning-subtle text-warning" };
+    return {
+      tipo: "por_vencer",
+      etiqueta: "Por vencer",
+      badgeClass: "bg-warning-subtle text-warning",
+    };
   }
 
-  return { tipo: "ok", etiqueta: "Vigente", badgeClass: "bg-success-subtle text-success" };
+  return {
+    tipo: "ok",
+    etiqueta: "Vigente",
+    badgeClass: "bg-success-subtle text-success",
+  };
 }
 
 function ProductsList() {
@@ -79,6 +97,9 @@ function ProductsList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Todas");
 
+  const [imageMode, setImageMode] = useState("url");
+  const [imageFile, setImageFile] = useState(null);
+
   const categoryOptions = useMemo(() => {
     const set = new Set(CATEGORY_BASE_OPTIONS);
     products.forEach((p) => {
@@ -91,6 +112,8 @@ function ProductsList() {
     setShowModal(false);
     setEditingProduct(null);
     setFormData(initialState);
+    setImageMode("url");
+    setImageFile(null);
   };
 
   const handleShowModal = (product = null) => {
@@ -116,6 +139,9 @@ function ProductsList() {
       setEditingProduct(null);
       setFormData(initialState);
     }
+    setImageMode("url");
+    setImageFile(null);
+
     setShowModal(true);
     setFeedback({ message: "", type: "" });
   };
@@ -132,6 +158,43 @@ function ProductsList() {
           ? Number(value)
           : value,
     }));
+  };
+  const handleImageModeChange = (e) => {
+    const mode = e.target.value;
+    setImageMode(mode);
+    setFeedback({ message: "", type: "" });
+    if (mode === "url") {
+      setImageFile(null);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+  };
+
+  const subirImagen = async (file) => {
+    const base = API_BASE_URL.replace(/\/$/, "");
+    const formDataFile = new FormData();
+    formDataFile.append("file", file);
+
+    const resp = await fetch(`${base}/upload/image`, {
+      method: "POST",
+      body: formDataFile,
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => "");
+      console.error("Error al subir imagen:", resp.status, text);
+      throw new Error("No se pudo subir la imagen. Intenta nuevamente.");
+    }
+
+    const data = await resp.json().catch(() => null);
+    if (!data || !data.url) {
+      throw new Error("La respuesta del servidor no contiene la URL de la imagen.");
+    }
+
+    return data.url;
   };
 
   const handleSubmit = async (e) => {
@@ -156,24 +219,52 @@ function ProductsList() {
         categoriaFinal = formData.nuevaCategoria.trim();
       }
 
-      const payload = {
+      let imagenFinalUrl = formData.imagenUrl?.trim() || "";
+
+      if (imageMode === "file") {
+        if (!imageFile && !editingProduct) {
+          throw new Error("Selecciona un archivo de imagen o usa una URL.");
+        }
+        if (imageFile) {
+          imagenFinalUrl = await subirImagen(imageFile);
+        }
+      } else {
+        if (!imagenFinalUrl) {
+          throw new Error("Debes indicar una URL de imagen o subir un archivo.");
+        }
+      }
+      let activoFinal = formData.activo;
+      if (formData.precio === 0) {
+          activoFinal = false; 
+          setFeedback((prev) => ({
+              ...prev,
+              message: (prev.message ? prev.message + " " : "") + 
+                       "El producto se marcó como inactivo porque el precio es $0.",
+              type: prev.type === "success" ? "success" : "warning",
+          }));
+      } else if (editingProduct && editingProduct.precio === 0 && formData.precio > 0) {
+          activoFinal = formData.activo;
+      }
+
+
+        const payload = {
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         precio: formData.precio,
         categoria: categoriaFinal,
         stock: formData.stock,
-        imagenUrl: formData.imagenUrl,
-        activo: formData.activo,
-
+        imagenUrl: imagenFinalUrl,
+        activo: activoFinal,
+                
         proveedorNombre: formData.proveedorNombre || null,
         loteCodigo: formData.loteCodigo || null,
         loteFechaFabricacion: formData.loteFechaFabricacion || null,
         loteFechaVencimiento: formData.loteFechaVencimiento || null,
         iva: formData.iva ?? 19,
-      };
+        };
 
       if (editingProduct) {
-        await updateProduct({ ...payload, id: editingProduct.id});
+        await updateProduct({ ...payload, id: editingProduct.id });
         setFeedback({
           message: "Producto actualizado correctamente.",
           type: "success",
@@ -342,13 +433,13 @@ function ProductsList() {
                       : stockCritico || loteEstado.tipo === "por_vencer"
                       ? "table-warning"
                       : "";
-                      return (
-                      <tr key={p.id} className={rowClass}>
-                        <td className="fw-bold text-muted">#{p.id}</td>
-                        <td>{p.nombre}</td>
-                        <td>{p.categoria}</td>
-                        <td>{p.proveedorNombre || "—"}</td>
-                  
+                  return (
+                    <tr key={p.id} className={rowClass}>
+                      <td className="fw-bold text-muted">#{p.id}</td>
+                      <td>{p.nombre}</td>
+                      <td>{p.categoria}</td>
+                      <td>{p.proveedorNombre || "—"}</td>
+
                       <td>
                         {p.loteCodigo ? (
                           <>
@@ -545,14 +636,54 @@ function ProductsList() {
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Imagen (archivo o URL)</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="imagenUrl"
-                    value={formData.imagenUrl}
-                    onChange={handleChange}
-                    placeholder="Ej: pollo.png o https://..."
-                  />
+                  <Form.Label>Imagen del producto</Form.Label>
+                  <div className="mb-2">
+                    <Form.Check
+                      inline
+                      type="radio"
+                      id="imageModeUrl"
+                      label="Usar URL"
+                      name="imageMode"
+                      value="url"
+                      checked={imageMode === "url"}
+                      onChange={handleImageModeChange}
+                    />
+                    <Form.Check
+                      inline
+                      type="radio"
+                      id="imageModeFile"
+                      label="Subir desde el PC"
+                      name="imageMode"
+                      value="file"
+                      checked={imageMode === "file"}
+                      onChange={handleImageModeChange}
+                    />
+                  </div>
+
+                  {imageMode === "url" && (
+                    <Form.Control
+                      type="text"
+                      name="imagenUrl"
+                      value={formData.imagenUrl}
+                      onChange={handleChange}
+                      placeholder="Ej: https://... o pollo.png"
+                    />
+                  )}
+
+                  {imageMode === "file" && (
+                    <>
+                      <Form.Control
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                      {editingProduct && formData.imagenUrl && !imageFile && (
+                        <Form.Text className="text-muted">
+                          Imagen actual: {formData.imagenUrl}
+                        </Form.Text>
+                      )}
+                    </>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
