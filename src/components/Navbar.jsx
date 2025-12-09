@@ -104,36 +104,48 @@ const Navbar = () => {
                 <div>
                   <p className="fw-semibold mb-1">{item.name}</p>
                   <small className="text-muted d-block mb-1">
-                    ${item.price.toLocaleString("es-CL")} c/u
+                    ${item.price.toLocaleString("es-CL")} {item.esGranel ? '/ Kg' : 'c/u'}
                   </small>
-                  <div className="btn-group btn-group-sm" role="group">
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={() => decreaseQuantity(item.id)}
-                    >
-                      <i className="bi bi-dash"></i>
-                    </button>
-                    <span
-                      className="btn btn-light disabled"
-                      style={{ minWidth: "40px" }}
-                    >
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={() => increaseQuantity(item.id)}
-                    >
-                      <i className="bi bi-plus"></i>
-                    </button>
+                  
+                  {/* --- LÓGICA DE CONTROLES (MODIFICADO) --- */}
+                  <div className="d-flex align-items-center">
+                    {item.esGranel ? (
+                        // CASO GRANEL: Solo mostramos el peso en un badge
+                        <span className="badge bg-light text-dark border fw-normal px-2 py-1">
+                            {(item.quantity * 1000).toFixed(0)} gr
+                        </span>
+                    ) : (
+                        // CASO UNIDAD: Botones +/-
+                        <div className="btn-group btn-group-sm" role="group">
+                            <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() => decreaseQuantity(item.id)}
+                            >
+                            <i className="bi bi-dash"></i>
+                            </button>
+                            <span
+                            className="btn btn-light disabled"
+                            style={{ minWidth: "40px" }}
+                            >
+                            {item.quantity}
+                            </span>
+                            <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() => increaseQuantity(item.id)}
+                            >
+                            <i className="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="text-end">
                 <p className="fw-bold mb-1 text-success">
-                  ${priceTotal.toLocaleString("es-CL")}
+                  ${Math.round(priceTotal).toLocaleString("es-CL")}
                 </p>
                 <button
                   className="btn btn-sm btn-outline-danger px-2 py-1"
@@ -365,7 +377,7 @@ const Navbar = () => {
               <span className="fw-bold fs-5">
                 Total:{" "}
                 <span className="text-success">
-                  ${totalAmount.toLocaleString("es-CL")}
+                  ${Math.round(totalAmount).toLocaleString("es-CL")}
                 </span>
               </span>
               <div>

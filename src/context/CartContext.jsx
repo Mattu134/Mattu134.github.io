@@ -5,6 +5,7 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
+// Función auxiliar para mostrar el modal de Bootstrap
 const showCustomModal = (message) => {
   const modalElement = document.getElementById('customAlertModal');
   if (modalElement) {
@@ -21,38 +22,51 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // --- MODIFICACIÓN CLAVE: Lógica de conteo ---
   const { totalItems, totalAmount } = useMemo(() => {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalItems = cart.reduce((sum, item) => {
+      // SI es Granel (ej: 0.5 Kg de tomate), cuenta como 1 ítem/bulto.
+      // SI es Unidad (ej: 2 leches), sumamos la cantidad (2).
+      const cantidadAContar = item.esGranel ? 1 : item.quantity;
+      return sum + cantidadAContar;
+    }, 0);
+    
+    // El monto total sigue siendo Precio * Cantidad (funciona con decimales)
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
     return { totalItems, totalAmount };
   }, [cart]);
 
-  const addToCart = useCallback((productName, productPrice, productId, productImage) => {
+  const addToCart = useCallback((product, quantity = 1) => {
     setCart(currentCart => {
-      const existing = currentCart.find(item => item.id === productId);
+      const existing = currentCart.find(item => item.id === product.id);
+
       if (existing) {
         return currentCart.map(item =>
-          item.id === productId
-            ? { ...item, quantity: item.quantity + 1 }
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
         return [
           ...currentCart,
           {
-            id: productId,
-            name: productName,
-            price: productPrice,
-            quantity: 1,
-            image: productImage
+            id: product.id,
+            name: product.nombre || product.name,
+            price: product.precio || product.price,
+            image: product.imagen || product.image || product.imagenUrl,
+            esGranel: product.esGranel, // IMPORTANTE: Guardamos la bandera
+            quantity: quantity
           }
         ];
       }
     });
   }, []);
+
   const removeFromCart = useCallback((productId) => {
     setCart(currentCart => currentCart.filter(i => i.id !== productId));
   }, []);
+
   const increaseQuantity = useCallback((productId) => {
     setCart(currentCart =>
       currentCart.map(item =>
@@ -62,6 +76,7 @@ export const CartProvider = ({ children }) => {
       )
     );
   }, []);
+
   const decreaseQuantity = useCallback((productId) => {
     setCart(currentCart =>
       currentCart
@@ -73,14 +88,16 @@ export const CartProvider = ({ children }) => {
         .filter(item => item.quantity > 0)
     );
   }, []);
+
   const processPayment = useCallback(() => {
     if (cart.length === 0) {
       showCustomModal('Tu carrito está vacío.');
     } else {
-      showCustomModal('Gracias por tu compra. Total: $' + totalAmount.toLocaleString('es-CL'));
+      showCustomModal('Gracias por tu compra. Total: $' + Math.round(totalAmount).toLocaleString('es-CL'));
       setCart([]); 
     }
   }, [cart, totalAmount]);
+
   const handleSearch = useCallback((term) => {
     setSearchTerm(term.toLowerCase().trim());
   }, []);
@@ -120,7 +137,7 @@ export const CartProvider = ({ children }) => {
               <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div className="modal-body">
-              <p id="customAlertModalMessage"></p>
+              <p id="customAlertModalMessage" className="fs-5"></p>
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
