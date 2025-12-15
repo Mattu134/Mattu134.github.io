@@ -22,6 +22,7 @@ function parseJwt(token) {
     return null;
   }
 }
+
 function mapRoleToFront(rolBackend) {
   switch (rolBackend) {
     case "ADMIN":
@@ -44,8 +45,21 @@ function mapBackendUserToFront(apiUser) {
 
   return {
     id: apiUser.id || apiUser.idUsuario || null,
+
     name: apiUser.nombre || apiUser.name || "",
     email: apiUser.correo || apiUser.email || "",
+
+    nombre: apiUser.nombre || "",
+    apellidos: apiUser.apellidos || "",
+    correo: apiUser.correo || apiUser.email || "",
+    rut: apiUser.rut || "",
+    telefono: apiUser.telefono || "",
+    region: apiUser.region || "",
+    comuna: apiUser.comuna || "",
+    direccion: apiUser.direccion || "",
+    tipodireccion: apiUser.tipodireccion || apiUser.tipoDireccion || "",
+    codigopostal: apiUser.codigopostal || apiUser.codigoPostal || "",
+
     role: roleFront,
     active:
       apiUser.activo !== undefined
@@ -56,14 +70,15 @@ function mapBackendUserToFront(apiUser) {
   };
 }
 
+
 // Función para obtener el usuario actual usando el token
 async function fetchCurrentUser(token) {
   const base = API_BASE_URL.replace(/\/$/, "");
-  const resp = await fetch(`${base}/auth/me`, {  // Cambio aquí a '/auth/me' para obtener los datos del usuario
-    method: "GET",  // Usamos GET para obtener el usuario actual
+  const resp = await fetch(`${base}/auth/me`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,  // Enviar el token en los encabezados
+      Authorization: `Bearer ${token}`,
     },
   });
 
@@ -71,22 +86,23 @@ async function fetchCurrentUser(token) {
     throw new Error(`Error al obtener usuario actual: ${resp.status}`);
   }
 
-  const apiUser = await resp.json();
-  return apiUser;
+  return await resp.json();
 }
 
 export const AuthProvider = ({ children }) => {
+  //sessionStorage (se borra al cerrar pestaña/ventana)
   const [authToken, setAuthToken] = useState(
-    () => localStorage.getItem("token") || null
+    () => sessionStorage.getItem("token") || null
   );
+
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
+    const stored = sessionStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
 
   const clearAuth = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     setAuthToken(null);
     setUser(null);
   };
@@ -97,7 +113,7 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    const payload = parseJwt(token);  // Decodificar el token
+    const payload = parseJwt(token);
     if (!payload && !apiUser) {
       clearAuth();
       return;
@@ -106,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     let userData = null;
 
     if (apiUser) {
-      userData = mapBackendUserToFront(apiUser);  // Mapear el usuario del backend
+      userData = mapBackendUserToFront(apiUser);
     } else if (payload) {
       const roleFront = mapRoleToFront(payload.rol);
 
@@ -124,9 +140,9 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    // Almacenar los datos del usuario y el token en `localStorage`
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(userData));
+    //Guardar en sessionStorage
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("user", JSON.stringify(userData));
 
     setAuthToken(token);
     setUser(userData);
@@ -134,11 +150,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      if (!authToken || user) return;
+      // Si no hay token, no hacemos nada
+      if (!authToken) return;
+
+      // Si ya hay user cargado desde storage, listo
+      if (user) return;
 
       try {
         const apiUser = await fetchCurrentUser(authToken);
-        setAuthFromToken(authToken, apiUser);  // Almacenar los datos del usuario
+        setAuthFromToken(authToken, apiUser);
       } catch (err) {
         console.warn(
           "No se pudo obtener el usuario desde la API, usando solo el token:",
@@ -149,31 +169,34 @@ export const AuthProvider = ({ children }) => {
     };
 
     initAuth();
-  }, []);
+  }, [authToken, user]);
 
-  const login = async (username, password) => {
-    try {
-      const base = API_BASE_URL.replace(/\/$/, "");
-      const resp = await fetch(`${base}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          correo: username,
-          email: username,
-          contrasena: password,
-          password: password,
-        }),
-      });
+const login = async (username, password) => {
+  try {
+    const base = API_BASE_URL.replace(/\/$/, "");
+    const resp = await fetch(`${base}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        correo: username,
+        email: username,
+        contrasena: password,
+        password: password,
+      }),
+    });
 
-      if (!resp.ok) {
-        console.error("Error en login:", resp.status);
-        return null;
-      }
+    if (!resp.ok) {
+      console.error("Error en login:", resp.status);
+      return null;
+    }
 
-      const data = await resp.json();
-      const { token } = data;
+    const data = await resp.json();
+    const { token } = data;
+
+
+
 
       if (!token) {
         console.error("La respuesta de login no trae token");
@@ -182,13 +205,14 @@ export const AuthProvider = ({ children }) => {
 
       let apiUser = null;
       try {
-        apiUser = await fetchCurrentUser(token);  // Obtener el usuario actual con el token
+        apiUser = await fetchCurrentUser(token);
       } catch (err) {
         console.warn("Login ok, pero no se pudo obtener /auth/me:", err);
       }
 
-      setAuthFromToken(token, apiUser);  // Establecer los datos de autenticación
-      return JSON.parse(localStorage.getItem("user"));
+      setAuthFromToken(token, apiUser);
+      const storedUser = sessionStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       return null;
@@ -216,4 +240,14 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+  async function fetchUserByEmailNoAuth(email) {
+  const base = API_BASE_URL.replace(/\/$/, "");
+  const resp = await fetch(`${base}/usuarios`, { method: "GET" });
+
+  if (!resp.ok) throw new Error(`Error al listar usuarios: ${resp.status}`);
+
+  const users = await resp.json();
+  return users.find((u) => (u.correo || u.email || "").toLowerCase() === email.toLowerCase()) || null;
+}
+
 };

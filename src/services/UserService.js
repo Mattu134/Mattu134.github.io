@@ -5,28 +5,30 @@ const API_BASE_URL =
 
 const USERS_URL = `${API_BASE_URL}/usuarios`;
 
-export const getUsers = async () => {
-  const token = localStorage.getItem("token");
+const getToken = () =>
+  sessionStorage.getItem("token") || localStorage.getItem("token");
 
-  const config = {
+const authConfig = () => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No hay token. Inicia sesión nuevamente.");
+  }
+
+  return {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
+};
 
-  const response = await axios.get(USERS_URL, config);
+export const getUsers = async () => {
+  const response = await axios.get(USERS_URL);
   return response.data;
 };
 
+
 export const createUser = async (userData) => {
-  const token = localStorage.getItem("token"); 
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
   const payload = {
     correo: userData.correo,
     contrasena: userData.contrasena,
@@ -37,25 +39,16 @@ export const createUser = async (userData) => {
     region: userData.region,
     comuna: userData.comuna,
     direccion: userData.direccion,
-    tipodireccion: userData.tipodireccion,
-    codigopostal: userData.codigopostal,
+    tipoDireccion: userData.tipoDireccion || userData.tipodireccion || null,
+    codigoPostal: userData.codigoPostal || userData.codigopostal || null,
     rol: userData.rol,
   };
 
-  const response = await axios.post(USERS_URL, payload, config);
+  const response = await axios.post(USERS_URL, payload, authConfig());
   return response.data;
 };
 
-// Actualizar un usuario existente
 export const updateUser = async (id, data) => {
-  const token = localStorage.getItem("token");
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
   const payload = {
     nombre: data.nombre ?? null,
     apellidos: data.apellidos ?? null,
@@ -63,26 +56,42 @@ export const updateUser = async (id, data) => {
     region: data.region ?? null,
     comuna: data.comuna ?? null,
     direccion: data.direccion ?? null,
-    tipodireccion: data.tipodireccion ?? null,
-    codigopostal: data.codigopostal ?? null,
+    tipoDireccion: data.tipoDireccion ?? data.tipodireccion ?? null,
+    codigoPostal: data.codigoPostal ?? data.codigopostal ?? null,
     rol: data.rol ?? null,
     activo: data.activo ?? null,
   };
 
-  const response = await axios.patch(`${USERS_URL}/${id}`, payload, config);
+  const response = await axios.patch(`${USERS_URL}/${id}`, payload, authConfig());
   return response.data;
 };
 
-// Eliminar un usuario por ID
 export const deleteUserById = async (id) => {
-  const token = localStorage.getItem("token");
+  const response = await axios.delete(`${USERS_URL}/${id}`, authConfig());
+  return response.data;
+};
+
+export const updateUserAddress = async (userId, addressData) => {
+  const token = getToken();
+
+  if (!token) {
+    throw new Error("No hay token de sesión. Vuelve a iniciar sesión.");
+  }
 
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
   };
 
-  const response = await axios.delete(`${USERS_URL}/${id}`, config);  
-  return response.data;
+  const payload = {
+    region: addressData.region,
+    comuna: addressData.comuna,
+    direccion: addressData.direccion,
+    tipoDireccion: addressData.tipodireccion,
+    codigoPostal: addressData.codigopostal || null,
+  };
+
+  await axios.patch(`${USERS_URL}/${userId}/direccion`, payload, config);
 };

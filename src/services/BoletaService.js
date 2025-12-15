@@ -1,19 +1,14 @@
 import { API_BASE_URL } from "./apiConfig";
 
-const BASE_URL = import.meta.env.VITE_API_URL || API_BASE_URL;
+const BASE_URL = API_BASE_URL.replace(/\/$/, "");
 
-const buildHeaders = () => {
-  const headers = {
-    "Content-Type": "application/json",
-  };
+const getToken = () =>
+  sessionStorage.getItem("token") || localStorage.getItem("token");
 
-  const token = localStorage.getItem("token");
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+const buildHeaders = () => ({
+  "Content-Type": "application/json",
+});
 
-  return headers;
-};
 
 export const crearBoleta = async (boletaPayload) => {
   const resp = await fetch(`${BASE_URL}/boletas`, {
@@ -24,18 +19,18 @@ export const crearBoleta = async (boletaPayload) => {
 
   if (!resp.ok) {
     const errorData = await resp.json().catch(() => null);
-    const message =
-      errorData?.message ||
-      errorData?.error ||
-      `Error al crear boleta (HTTP ${resp.status})`;
-    throw new Error(message);
+    throw new Error(
+      errorData?.message || errorData?.error || `Error al crear boleta (HTTP ${resp.status})`
+    );
   }
 
   return resp.json();
 };
 
+
 export const listarBoletas = async () => {
   const resp = await fetch(`${BASE_URL}/boletas`, {
+    method: "GET",
     headers: buildHeaders(),
   });
 

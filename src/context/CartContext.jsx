@@ -5,7 +5,6 @@ const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
-// Función auxiliar para mostrar el modal de Bootstrap
 const showCustomModal = (message) => {
   const modalElement = document.getElementById('customAlertModal');
   if (modalElement) {
@@ -25,15 +24,12 @@ export const CartProvider = ({ children }) => {
   // --- MODIFICACIÓN CLAVE: Lógica de conteo ---
   const { totalItems, totalAmount } = useMemo(() => {
     const totalItems = cart.reduce((sum, item) => {
-      // SI es Granel (ej: 0.5 Kg de tomate), cuenta como 1 ítem/bulto.
-      // SI es Unidad (ej: 2 leches), sumamos la cantidad (2).
       const cantidadAContar = item.esGranel ? 1 : item.quantity;
       return sum + cantidadAContar;
     }, 0);
-    
-    // El monto total sigue siendo Precio * Cantidad (funciona con decimales)
+
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
+
     return { totalItems, totalAmount };
   }, [cart]);
 
@@ -55,7 +51,7 @@ export const CartProvider = ({ children }) => {
             name: product.nombre || product.name,
             price: product.precio || product.price,
             image: product.imagen || product.image || product.imagenUrl,
-            esGranel: product.esGranel, // IMPORTANTE: Guardamos la bandera
+            esGranel: product.esGranel,
             quantity: quantity
           }
         ];
@@ -89,14 +85,24 @@ export const CartProvider = ({ children }) => {
     );
   }, []);
 
+  const resetCart = useCallback((options = { clearSearch: false }) => {
+    setCart([]);
+    if (options?.clearSearch) setSearchTerm('');
+  }, []);
+
   const processPayment = useCallback(() => {
     if (cart.length === 0) {
       showCustomModal('Tu carrito está vacío.');
-    } else {
-      showCustomModal('Gracias por tu compra. Total: $' + Math.round(totalAmount).toLocaleString('es-CL'));
-      setCart([]); 
+      return false;
     }
-  }, [cart, totalAmount]);
+
+    showCustomModal(
+      'Gracias por tu compra. Total: $' + Math.round(totalAmount).toLocaleString('es-CL')
+    );
+
+    resetCart();
+    return true;
+  }, [cart.length, totalAmount, resetCart]);
 
   const handleSearch = useCallback((term) => {
     setSearchTerm(term.toLowerCase().trim());
@@ -111,6 +117,7 @@ export const CartProvider = ({ children }) => {
     increaseQuantity,
     decreaseQuantity,
     processPayment,
+    resetCart,        
     searchTerm,
     handleSearch
   }), [
@@ -122,6 +129,7 @@ export const CartProvider = ({ children }) => {
     increaseQuantity,
     decreaseQuantity,
     processPayment,
+    resetCart,
     searchTerm,
     handleSearch
   ]);

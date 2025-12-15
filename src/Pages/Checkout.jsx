@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { crearBoleta } from "../services/BoletaService";
@@ -23,11 +23,7 @@ function calcularTotalesCarrito(cart) {
     ivaTotal += ivaLinea;
   });
 
-  return {
-    subtotal,
-    ivaTotal,
-    total: subtotal + ivaTotal,
-  };
+  return { subtotal, ivaTotal, total: subtotal + ivaTotal };
 }
 
 function calcularTotalesBoleta(boleta) {
@@ -54,14 +50,17 @@ function calcularTotalesBoleta(boleta) {
   });
 
   const total = boleta.total ?? subtotal + ivaTotal;
-
   return { subtotal, ivaTotal, total };
 }
 
 const Checkout = () => {
-  const { cart = [], totalAmount = 0, clearCart } = useCart();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
+
+  const cartCtx = useCart();
+  const cart = cartCtx?.cart || [];
+  const totalAmount = cartCtx?.totalAmount || 0;
+  const resetCart = cartCtx?.resetCart || cartCtx?.clearCart || (() => {});
 
   const [showNotification, setShowNotification] = useState(false);
   const [error, setError] = useState(null);
@@ -73,26 +72,23 @@ const Checkout = () => {
     [cart]
   );
 
-  const [direccionEnvio, setDireccionEnvio] = useState({
-    nombre: user?.nombre || user?.name || "",
-    apellidos: user?.apellidos || "",
-    email: user?.email || "",
-    rut: user?.rut || "",
-    telefono: user?.telefono || "",
-    region: user?.region || "",
-    comuna: user?.comuna || "",
-    direccion: user?.direccion || "",
-    tipoDireccion: user?.tipoDireccion || "",
-    codigoPostal: user?.codigoPostal || "",
+  const [direccionUsuario, setDireccionUsuario] = useState({
+    region: "",
+    comuna: "",
+    direccion: "",
+    tipoDireccion: "",
+    codigoPostal: "",
   });
 
-  const handleDireccionChange = (e) => {
-    const { name, value } = e.target;
-    setDireccionEnvio((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  useEffect(() => {
+    setDireccionUsuario({
+      region: user?.region || "",
+      comuna: user?.comuna || "",
+      direccion: user?.direccion || "",
+      tipoDireccion: user?.tipoDireccion || user?.tipodireccion || "",
+      codigoPostal: user?.codigoPostal || user?.codigopostal || "",
+    });
+  }, [user]);
 
   const handleProcesarPago = async (e) => {
     e.preventDefault();
@@ -105,34 +101,52 @@ const Checkout = () => {
       if (!cart || cart.length === 0) {
         throw new Error("No hay productos en el carrito para procesar el pago.");
       }
+
       const sinStock = cart.filter(
-        (item) =>
-          typeof item.stock === "number" && item.quantity > item.stock
+        (item) => typeof item.stock === "number" && item.quantity > item.stock
       );
+
       if (sinStock.length > 0) {
-        const nombres = sinStock.map((i) => i.name).join(", ");
+        throw new Error("Producto sin stock");
+      }
+
+      if (!direccionUsuario.direccion?.trim()) {
         throw new Error(
-          `No hay stock suficiente para los siguientes productos: ${nombres}.`
+          "Tu cuenta no tiene dirección registrada. Ve a tu perfil y completa tu dirección."
         );
       }
-      if (!direccionEnvio.nombre || !direccionEnvio.email || !direccionEnvio.direccion) {
+      if (!direccionUsuario.tipoDireccion?.trim()) {
         throw new Error(
-          "Faltan datos básicos de envío (nombre, correo o dirección)."
+          "Tu cuenta no tiene tipo de dirección registrado. Ve a tu perfil y completa tu dirección."
+        );
+      }
+
+      const nombreUser = user?.nombre || user?.name || "";
+      const apellidosUser = user?.apellidos || "";
+      const correoUser = user?.correo || user?.email || "";
+      const rutUser = user?.rut || "";
+      const telefonoUser = user?.telefono || "";
+
+      if (!nombreUser || !correoUser) {
+        throw new Error(
+          "No se encontraron datos básicos del usuario (nombre/correo). Re-inicia sesión."
         );
       }
 
       const boletaPayload = {
         cliente: {
-          nombre: direccionEnvio.nombre,
-          apellidos: direccionEnvio.apellidos,
-          email: direccionEnvio.email,
-          rut: direccionEnvio.rut,
-          telefono: direccionEnvio.telefono,
-          region: direccionEnvio.region,
-          comuna: direccionEnvio.comuna,
-          direccion: direccionEnvio.direccion,
-          tipoDireccion: direccionEnvio.tipoDireccion,
-          codigoPostal: direccionEnvio.codigoPostal,
+          nombre: nombreUser,
+          apellidos: apellidosUser,
+          email: correoUser,
+          rut: rutUser,
+          telefono: telefonoUser,
+
+          region: direccionUsuario.region?.trim() || "",
+          comuna: direccionUsuario.comuna?.trim() || "",
+          direccion: direccionUsuario.direccion.trim(),
+
+          tipoDireccion: direccionUsuario.tipoDireccion.trim(),
+          codigoPostal: direccionUsuario.codigoPostal?.trim() || null,
         },
         total: totalAmount,
         items: cart.map((item) => ({
@@ -144,11 +158,10 @@ const Checkout = () => {
       };
 
       const boletaCreada = await crearBoleta(boletaPayload);
+
       setBoleta(boletaCreada);
       setShowNotification(true);
-      if (typeof clearCart === "function") {
-        clearCart();
-      }
+      if (typeof resetCart === "function") resetCart();
     } catch (err) {
       console.error("Error en el proceso de pago / boleta:", err);
 
@@ -172,6 +185,7 @@ const Checkout = () => {
       setErrorInfo({ status, data });
     }
   };
+
   if (!isAuthenticated) {
     return (
       <div className="container py-5">
@@ -212,6 +226,7 @@ const Checkout = () => {
               </div>
               <h2 className="fw-bold mb-3">Hubo un problema con tu compra</h2>
               <p className="text-muted mb-4">{error}</p>
+
               <div className="d-flex flex-column flex-md-row justify-content-center gap-2 mt-4">
                 <button
                   className="btn btn-outline-secondary"
@@ -219,10 +234,7 @@ const Checkout = () => {
                 >
                   Volver al resumen del pedido
                 </button>
-                <button
-                  className="btn btn-success"
-                  onClick={() => navigate("/")}
-                >
+                <button className="btn btn-success" onClick={() => navigate("/")}>
                   Ir al inicio
                 </button>
               </div>
@@ -231,12 +243,19 @@ const Checkout = () => {
                 Si el problema persiste, puedes contactarnos en{" "}
                 <strong>ecomarket@contacto.cl</strong>.
               </p>
+
+              {errorInfo && (
+                <pre className="text-start mt-3 small text-muted">
+                  {JSON.stringify(errorInfo, null, 2)}
+                </pre>
+              )}
             </div>
           </div>
         </div>
       </div>
     );
   }
+
   if (boleta) {
     const { subtotal: subB, ivaTotal: ivaB, total: totalB } =
       calcularTotalesBoleta(boleta);
@@ -265,7 +284,8 @@ const Checkout = () => {
                     : "—"}
                 </p>
                 <p className="text-muted mb-1">
-                  Cliente: {boleta.cliente?.nombre || "—"}
+                  Cliente: {boleta.cliente?.nombre || "—"}{" "}
+                  {boleta.cliente?.apellidos || ""}
                 </p>
                 <p className="text-muted mb-0">
                   Email: {boleta.cliente?.email || "—"}
@@ -289,18 +309,17 @@ const Checkout = () => {
                       </div>
                       <span className="fw-bold">
                         $
-                        {(
-                          item.cantidad * item.precioUnitario
-                        ).toLocaleString("es-CL")}
+                        {(item.cantidad * item.precioUnitario).toLocaleString(
+                          "es-CL"
+                        )}
                       </span>
                     </div>
                   ))}
                 </div>
+
                 <div className="mt-3 border-top pt-3">
                   <div className="d-flex justify-content-between">
-                    <span className="text-muted small">
-                      Subtotal (sin IVA):
-                    </span>
+                    <span className="text-muted small">Subtotal (sin IVA):</span>
                     <span className="small">
                       ${subB.toLocaleString("es-CL")}
                     </span>
@@ -321,10 +340,7 @@ const Checkout = () => {
               </div>
 
               <div className="text-center mt-4">
-                <button
-                  className="btn btn-success"
-                  onClick={() => navigate("/")}
-                >
+                <button className="btn btn-success" onClick={() => navigate("/")}>
                   Volver al inicio
                 </button>
               </div>
@@ -334,6 +350,10 @@ const Checkout = () => {
       </div>
     );
   }
+
+  const roClass = "form-control bg-light";
+  const roProps = { readOnly: true };
+
   return (
     <div className="container py-5">
       {showNotification && (
@@ -356,126 +376,109 @@ const Checkout = () => {
           <>
             <div className="col-lg-7">
               <h2 className="mb-4 fw-bold">Confirmar datos y dirección de envío</h2>
-
-              <div className="card shadow-sm mb-3 p-3">
-                <h5 className="fw-bold mb-2">Datos del usuario</h5>
-                <p className="mb-1">
-                  <strong>Nombre: </strong>
-                  {user?.nombre || user?.name || "—"}
-                </p>
-                <p className="mb-1">
-                  <strong>Correo: </strong>
-                  {user?.email || "—"}
-                </p>
-                <p className="mb-1">
-                  <strong>Rol: </strong>
-                  {user?.role || "Cliente"}
-                </p>
-              </div>
-
               <div className="card shadow-sm p-3">
-                <h5 className="fw-bold mb-3">Dirección de envío</h5>
+                <h5 className="fw-bold mb-3">Confirmación</h5>
+
                 <form className="row g-3" onSubmit={handleProcesarPago}>
                   <div className="col-md-6">
                     <label className="form-label">Nombre</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="nombre"
-                      value={direccionEnvio.nombre}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={user?.nombre || user?.name || "—"}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label">Apellidos</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="apellidos"
-                      value={direccionEnvio.apellidos}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={user?.apellidos || "—"}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label">Correo electrónico</label>
                     <input
                       type="email"
-                      className="form-control"
-                      name="email"
-                      value={direccionEnvio.email}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={user?.correo || user?.email || "—"}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label">Teléfono</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="telefono"
-                      value={direccionEnvio.telefono}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={user?.telefono || "—"}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label">RUT</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="rut"
-                      value={direccionEnvio.rut}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={user?.rut || "—"}
+                      {...roProps}
                     />
                   </div>
+
+                  <hr className="my-2" />
+
                   <div className="col-md-6">
                     <label className="form-label">Región</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="region"
-                      value={direccionEnvio.region}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={direccionUsuario.region}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
                     <label className="form-label">Comuna</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="comuna"
-                      value={direccionEnvio.comuna}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={direccionUsuario.comuna}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-12">
                     <label className="form-label">Dirección</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="direccion"
-                      value={direccionEnvio.direccion}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={direccionUsuario.direccion}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
-                    <label className="form-label">
-                      Tipo de dirección (casa, depto, etc.)
-                    </label>
+                    <label className="form-label">Tipo de dirección</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="tipoDireccion"
-                      value={direccionEnvio.tipoDireccion}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={direccionUsuario.tipoDireccion}
+                      {...roProps}
                     />
                   </div>
+
                   <div className="col-md-6">
-                    <label className="form-label">Código postal</label>
+                    <label className="form-label">Código postal (opcional)</label>
                     <input
                       type="text"
-                      className="form-control"
-                      name="codigoPostal"
-                      value={direccionEnvio.codigoPostal}
-                      onChange={handleDireccionChange}
+                      className={roClass}
+                      value={direccionUsuario.codigoPostal || ""}
+                      {...roProps}
                     />
                   </div>
 
@@ -494,80 +497,42 @@ const Checkout = () => {
                 </form>
               </div>
             </div>
+
             <div className="col-lg-5">
               <div className="card shadow-sm p-3">
                 <h5 className="fw-bold mb-3">Resumen del pedido</h5>
 
                 <div className="list-group">
-                  {cart.map((item) => {
-                    const isExternalImage =
-                      item.image && item.image.startsWith("http");
-                    const imageSrc = item.image
-                      ? isExternalImage
-                        ? item.image
-                        : `/images/${item.image}`
-                      : "/images/placeholder.png";
-
-                    return (
-                      <div
-                        key={item.id}
-                        className="d-flex align-items-center mb-3 border-bottom pb-2"
-                      >
-                        <img
-                          src={imageSrc}
-                          alt={item.name || "Producto"}
-                          width="60"
-                          height="60"
-                          style={{
-                            objectFit: "contain",
-                            backgroundColor: "#fff",
-                            borderRadius: "8px",
-                            border: "1px solid #eee",
-                          }}
-                          className="me-3"
-                        />
-                        <div className="flex-grow-1">
-                          <p className="mb-1 fw-semibold">{item.name}</p>
-                          <small className="text-muted d-block">
-                            {item.quantity} x $
-                            {item.price.toLocaleString("es-CL")}
-                          </small>
-                          {typeof item.iva === "number" && (
-                            <small className="text-muted">
-                              IVA: {item.iva}%
-                            </small>
-                          )}
-                        </div>
-                        <p className="mb-0 fw-bold">
-                          $
-                          {(item.price * item.quantity).toLocaleString(
-                            "es-CL"
-                          )}
-                        </p>
+                  {cart.map((item) => (
+                    <div
+                      key={item.id}
+                      className="d-flex align-items-center mb-3 border-bottom pb-2"
+                    >
+                      <div className="flex-grow-1">
+                        <p className="mb-1 fw-semibold">{item.name}</p>
+                        <small className="text-muted d-block">
+                          {item.quantity} x ${item.price.toLocaleString("es-CL")}
+                        </small>
                       </div>
-                    );
-                  })}
+                      <p className="mb-0 fw-bold">
+                        ${(item.price * item.quantity).toLocaleString("es-CL")}
+                      </p>
+                    </div>
+                  ))}
                 </div>
+
                 <div className="mt-3 border-top pt-3">
                   <div className="d-flex justify-content-between">
-                    <span className="text-muted small">
-                      Subtotal (sin IVA):
-                    </span>
-                    <span className="small">
-                      ${subtotal.toLocaleString("es-CL")}
-                    </span>
+                    <span className="text-muted small">Subtotal (sin IVA):</span>
+                    <span className="small">${subtotal.toLocaleString("es-CL")}</span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <span className="text-muted small">IVA incluido:</span>
-                    <span className="small">
-                      ${ivaTotal.toLocaleString("es-CL")}
-                    </span>
+                    <span className="small">${ivaTotal.toLocaleString("es-CL")}</span>
                   </div>
                   <div className="d-flex justify-content-between fw-bold mt-2">
                     <span>Total:</span>
-                    <span className="text-success">
-                      ${total.toLocaleString("es-CL")}
-                    </span>
+                    <span className="text-success">${total.toLocaleString("es-CL")}</span>
                   </div>
                 </div>
               </div>

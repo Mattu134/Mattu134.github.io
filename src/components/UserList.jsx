@@ -6,7 +6,7 @@ import {
   createUser,
   updateUser,
   deleteUserById,
-} from "../services/userService";
+} from "../services/UserService";
 import regionesComunas from "../data/Regiones-Comunas";
 
 const initialFormState = {
@@ -22,6 +22,20 @@ const initialFormState = {
   direccion: "",
   codigopostal: "",
   rol: "Cliente",
+};
+
+const normalizeRolToBackend = (rolUi) => {
+  const v = (rolUi || "").trim().toLowerCase();
+  if (v === "administrador") return "ADMINISTRADOR";
+  if (v === "vendedor") return "VENDEDOR";
+  return "CLIENTE";
+};
+
+const normalizeRolToUI = (rolBackend) => {
+  const v = (rolBackend || "").trim().toUpperCase();
+  if (v === "ADMINISTRADOR") return "Administrador";
+  if (v === "VENDEDOR") return "Vendedor";
+  return "Cliente";
 };
 
 function UserList() {
@@ -61,11 +75,13 @@ function UserList() {
     const regionData = regionesComunas.regiones.find(
       (region) => region.nombre === selectedRegion
     );
+
     if (regionData) {
       setFilteredComunas(regionData.comunas);
     } else {
       setFilteredComunas([]);
     }
+
     if (
       !selectedRegion ||
       !regionData ||
@@ -73,7 +89,7 @@ function UserList() {
     ) {
       setFormData((prev) => ({ ...prev, comuna: "" }));
     }
-  }, [selectedRegion]);
+  }, [selectedRegion]); // mantengo tu dependencia como estaba
 
   const handleOpenCreateModal = () => {
     setEditingUser(null);
@@ -101,9 +117,13 @@ function UserList() {
       region: regionToEdit,
       comuna: user.comuna || "",
       direccion: user.direccion || "",
-      tipodireccion: user.tipodireccion || "Casa",
-      codigopostal: user.codigopostal || "",
-      rol: user.rol || "Cliente",
+
+      // ✅ ahora tu API devuelve tipoDireccion/codigoPostal
+      tipodireccion: user.tipoDireccion || "Casa",
+      codigopostal: user.codigoPostal || "",
+
+      // UI: Cliente/Vendedor/Administrador
+      rol: normalizeRolToUI(user.rol),
     }));
 
     setShowModal(true);
@@ -120,6 +140,7 @@ function UserList() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -143,12 +164,16 @@ function UserList() {
       if (!formData.correo.trim()) {
         throw new Error("El correo es obligatorio.");
       }
+
       if (!editingUser && !formData.contrasena.trim()) {
         throw new Error("La contraseña es obligatoria al crear un usuario.");
       }
-      if(!formData.contrasena.trim().length >=8){
+
+      // ✅ FIX: validación correcta
+      if (!editingUser && formData.contrasena.trim().length < 8) {
         throw new Error("La contraseña debe tener al menos 8 caracteres.");
       }
+
       if (!formData.rut.trim()) {
         throw new Error("El RUT es obligatorio.");
       }
@@ -168,6 +193,9 @@ function UserList() {
         throw new Error("El rol es obligatorio.");
       }
 
+      // ✅ backend espera CLIENTE/VENDEDOR/ADMINISTRADOR
+      const rolBackend = normalizeRolToBackend(formData.rol);
+
       const payload = {
         correo: formData.correo.trim(),
         contrasena: formData.contrasena.trim(),
@@ -178,17 +206,17 @@ function UserList() {
         region: formData.region.trim(),
         comuna: formData.comuna.trim(),
         direccion: formData.direccion.trim(),
-        tipodireccion: formData.tipodireccion.trim(),
-        codigopostal: formData.codigopostal.trim() || null,
-        rol: formData.rol.trim(),
+
+        // ✅ backend: tipoDireccion/codigoPostal
+        tipoDireccion: formData.tipodireccion.trim(),
+        codigoPostal: formData.codigopostal.trim() || null,
+
+        rol: rolBackend,
       };
 
       if (!editingUser) {
         await createUser(payload);
-        setFeedback({
-          message: "Usuario creado correctamente.",
-          type: "success",
-        });
+        setFeedback({ message: "Usuario creado correctamente.", type: "success" });
       } else {
         const payloadUpdate = {
           nombre: payload.nombre,
@@ -197,10 +225,14 @@ function UserList() {
           region: payload.region,
           comuna: payload.comuna,
           direccion: payload.direccion,
-          tipodireccion: payload.tipodireccion,
-          codigopostal: payload.codigopostal,
+
+          // ✅ backend: tipoDireccion/codigoPostal
+          tipoDireccion: payload.tipoDireccion,
+          codigoPostal: payload.codigoPostal,
+
           rol: payload.rol,
         };
+
         await updateUser(editingUser.id, payloadUpdate);
         setFeedback({
           message: "Usuario actualizado correctamente.",
@@ -214,7 +246,8 @@ function UserList() {
       console.error("Error guardando usuario:", err);
       setFeedback({
         message:
-          err.message || "Ocurrió un error al guardar el usuario. Intenta nuevamente.",
+          err.message ||
+          "Ocurrió un error al guardar el usuario. Intenta nuevamente.",
         type: "danger",
       });
     } finally {
@@ -373,24 +406,28 @@ function UserList() {
           </div>
         )}
       </div>
+
       <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title>
             {editingUser ? "Editar usuario" : "Nuevo usuario"}
           </Modal.Title>
         </Modal.Header>
+
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
             {feedback.message && (
-                <div className={`alert alert-${feedback.type}`} role="alert">
-                    {feedback.message}
-                </div>
+              <div className={`alert alert-${feedback.type}`} role="alert">
+                {feedback.message}
+              </div>
             )}
 
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Nombre <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Nombre <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     name="nombre"
@@ -403,7 +440,9 @@ function UserList() {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Apellidos <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Apellidos <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     name="apellidos"
@@ -419,7 +458,9 @@ function UserList() {
             <Row>
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>RUT <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    RUT <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     name="rut"
@@ -433,7 +474,9 @@ function UserList() {
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Teléfono <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Teléfono <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Control
                     type="tel"
                     name="telefono"
@@ -446,7 +489,9 @@ function UserList() {
               </Col>
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Rol <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Rol <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     name="rol"
                     value={formData.rol}
@@ -462,7 +507,9 @@ function UserList() {
             </Row>
 
             <Form.Group className="mb-3">
-              <Form.Label>Correo <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                Correo <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="email"
                 name="correo"
@@ -476,7 +523,9 @@ function UserList() {
 
             {!editingUser && (
               <Form.Group className="mb-3">
-                <Form.Label>Contraseña <span className="text-danger">*</span></Form.Label>
+                <Form.Label>
+                  Contraseña <span className="text-danger">*</span>
+                </Form.Label>
                 <Form.Control
                   type="password"
                   name="contrasena"
@@ -488,12 +537,15 @@ function UserList() {
               </Form.Group>
             )}
 
-            <hr className="my-4"/>
+            <hr className="my-4" />
             <h5 className="mb-3">Datos de Domicilio</h5>
+
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Región <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Región <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     name="region"
                     value={formData.region}
@@ -509,9 +561,12 @@ function UserList() {
                   </Form.Select>
                 </Form.Group>
               </Col>
+
               <Col md={6}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Comuna <span className="text-danger">*</span></Form.Label>
+                  <Form.Label>
+                    Comuna <span className="text-danger">*</span>
+                  </Form.Label>
                   <Form.Select
                     name="comuna"
                     value={formData.comuna}
@@ -531,35 +586,40 @@ function UserList() {
             </Row>
 
             <Row>
-                <Col md={9}>
-                    <Form.Group className="mb-3">
-                    <Form.Label>Dirección <span className="text-danger">*</span></Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="direccion"
-                        value={formData.direccion}
-                        onChange={handleChange}
-                        required
-                        placeholder="E.g. Calle Principal #123"
-                    />
-                    </Form.Group>
-                </Col>
-                <Col md={3}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Tipo Dirección <span className="text-danger">*</span></Form.Label>
-                        <Form.Select
-                            name="tipodireccion"
-                            value={formData.tipodireccion}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="Casa">Casa</option>
-                            <option value="Departamento">Departamento</option>
-                            <option value="Oficina">Oficina</option>
-                            <option value="Otro">Otro</option>
-                        </Form.Select>
-                    </Form.Group>
-                </Col>
+              <Col md={9}>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    Dirección <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="direccion"
+                    value={formData.direccion}
+                    onChange={handleChange}
+                    required
+                    placeholder="E.g. Calle Principal #123"
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={3}>
+                <Form.Group className="mb-3">
+                  <Form.Label>
+                    Tipo Dirección <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select
+                    name="tipodireccion"
+                    value={formData.tipodireccion}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="Casa">Casa</option>
+                    <option value="Departamento">Departamento</option>
+                    <option value="Oficina">Oficina</option>
+                    <option value="Otro">Otro</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
             </Row>
 
             <Form.Group className="mb-3">
@@ -572,8 +632,8 @@ function UserList() {
                 placeholder="E.g. 7750000"
               />
             </Form.Group>
-
           </Modal.Body>
+
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal} disabled={saving}>
               Cancelar

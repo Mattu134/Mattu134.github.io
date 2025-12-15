@@ -1,4 +1,4 @@
-import { memo, useState } from "react"; // Agregamos useState
+import { memo, useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
@@ -6,13 +6,13 @@ const ProductCard = memo(({ product }) => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  // 1. Normalización de datos
+  // Normalización de datos
   const prodId = product.id ?? product._id;
   const prodName = product.nombre || product.name;
   const prodImage = product.imagen_url || product.imagenUrl || product.image;
   const prodPrice = product.precio ?? product.price;
   const prodOriginal = product.precio_original ?? product.originalPrice;
-  // --- NUEVO: Detectamos si es granel (asegúrate que el backend mande este campo)
+  // NUEVO: Detectamos si es granel (asegúrate que el backend mande este campo)
   const isBulk = product.esGranel || product.es_granel; 
 
   const isOffer = prodOriginal && prodPrice < prodOriginal;
@@ -22,7 +22,7 @@ const ProductCard = memo(({ product }) => {
   const isExternalImage = rawImage.startsWith("http");
   const imageSrc = isExternalImage ? rawImage : `/images/${rawImage}`;
 
-  // --- NUEVO: Estado para la cantidad (Visual) ---
+  // NUEVO: Estado para la cantidad (Visual) ---
   // Si es granel, iniciamos en 500gr. Si es unidad, en 1.
   const [cantidad, setCantidad] = useState(isBulk ? 500 : 1);
 
@@ -31,7 +31,7 @@ const ProductCard = memo(({ product }) => {
     navigate(`/producto/${prodId}`);
   };
 
-  // --- NUEVO: Función para agregar al carrito con la lógica de conversión ---
+  // NUEVO: Función para agregar al carrito con la lógica de conversión ---
   const handleAddToCart = (e) => {
     e.stopPropagation();
 
@@ -40,7 +40,6 @@ const ProductCard = memo(({ product }) => {
     const finalQuantity = isBulk ? (cantidad / 1000) : cantidad;
 
     // IMPORTANTE: He actualizado esto para pasar el objeto completo o la cantidad.
-    // Tu Context debe estar preparado para recibir (producto, cantidad).
     // Aquí paso los datos individuales + la cantidad calculada.
     addToCart({
         id: prodId,
@@ -65,7 +64,7 @@ const ProductCard = memo(({ product }) => {
           overflow: "hidden",
           cursor: prodId ? "pointer" : "default",
         }}
-        onClick={handleCardClick} // Navegación al hacer clic en la tarjeta
+        onClick={handleCardClick} 
       >
         {/* --- Imagen del Producto --- */}
         <div
