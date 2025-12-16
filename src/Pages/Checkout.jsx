@@ -502,24 +502,45 @@ const Checkout = () => {
               <div className="card shadow-sm p-3">
                 <h5 className="fw-bold mb-3">Resumen del pedido</h5>
 
-                <div className="list-group">
-                  {cart.map((item) => (
-                    <div
-                      key={item.id}
-                      className="d-flex align-items-center mb-3 border-bottom pb-2"
-                    >
-                      <div className="flex-grow-1">
-                        <p className="mb-1 fw-semibold">{item.name}</p>
-                        <small className="text-muted d-block">
-                          {item.quantity} x ${item.price.toLocaleString("es-CL")}
-                        </small>
-                      </div>
-                      <p className="mb-0 fw-bold">
-                        ${(item.price * item.quantity).toLocaleString("es-CL")}
-                      </p>
-                    </div>
-                  ))}
+              <div className="list-group">
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="d-flex align-items-center mb-3 border-bottom pb-2"
+                >
+                  <img
+                    src={
+                      item.imagen ||
+                      item.image ||
+                      item.img ||
+                      item.urlImagen ||
+                      item.imagenUrl ||
+                      "https://via.placeholder.com/60"
+                    }
+                    alt={item.name}
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                      marginRight: "12px",
+                      border: "1px solid #e5e5e5",
+                    }}
+                  />
+                  <div className="flex-grow-1">
+                    <p className="mb-1 fw-semibold">{item.name}</p>
+                    <small className="text-muted d-block">
+                      {item.quantity} x ${item.price.toLocaleString("es-CL")}
+                    </small>
+                  </div>
+
+                  <p className="mb-0 fw-bold">
+                    ${(item.price * item.quantity).toLocaleString("es-CL")}
+                  </p>
                 </div>
+              ))}
+            </div>
+
 
                 <div className="mt-3 border-top pt-3">
                   <div className="d-flex justify-content-between">
