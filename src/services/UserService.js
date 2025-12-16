@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://3.23.132.70:8080/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const USERS_URL = `${API_BASE_URL}/usuarios`;
+
 
 const getToken = () =>
   sessionStorage.getItem("token") || localStorage.getItem("token");
